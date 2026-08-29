@@ -1,0 +1,14 @@
+{
+  "name": "pi-tandem",
+  "version": "0.1.0",
+  "description": "Shared agent system prompt and skills for pi, from the tandem-skills repo",
+  "keywords": ["pi-package"],
+  "license": "MIT",
+  "files": [
+    "extensions/",
+    "skills/",
+    "prompt.md",
+    "LICENSE",
+    "README.md"
+  ]
+}

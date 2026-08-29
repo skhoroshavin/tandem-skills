@@ -1,0 +1,4 @@
+{
+  "name": "claude-tandem",
+  "description": "Shared agent system prompt and skills for Claude Code, from the tandem-skills repo"
+}
