@@ -9,7 +9,14 @@ const prompt = readFileSync(
 );
 
 export default function (pi: ExtensionAPI) {
-  pi.on("before_agent_start", async (event) => ({
-    systemPrompt: `${event.systemPrompt}\n\n${prompt}`,
-  }));
+  pi.on("before_agent_start", async (event) => {
+    const marker = "\n\n<project_context>\n\n";
+    const idx = event.systemPrompt.indexOf(marker);
+    return {
+      systemPrompt:
+        idx === -1
+          ? `${event.systemPrompt}\n\n${prompt}`
+          : event.systemPrompt.slice(0, idx) + `\n\n${prompt}` + event.systemPrompt.slice(idx),
+    };
+  });
 }
