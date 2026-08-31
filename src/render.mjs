@@ -23,6 +23,11 @@ function loadValues(harnessDir) {
 }
 
 function render(text, values, where) {
+  const openers = (text.match(/<!--cli:/g) || []).length;
+  const closers = (text.match(/<!--\/cli-->/g) || []).length;
+  if (openers !== closers) {
+    throw new Error(`${where}: unbalanced cli markers: ${openers} openers, ${closers} closers`);
+  }
   const out = text.replace(/{{([a-z_]+)}}/g, (match, key) => {
     if (!(key in values)) throw new Error(`${where}: unresolved placeholder: ${match}`);
     return values[key];
@@ -54,11 +59,13 @@ const readmeTemplate = readFileSync(join(src, "README.md"), "utf8");
 const licenseText = readFileSync(join(repo, "LICENSE"), "utf8");
 const skillFiles = listTree(join(src, "skills"));
 const execFiles = new Set(skillFiles.filter((f) => statSync(f).mode & 0o111));
+const runtimeDir = join(src, "runtime");
+const runtimeFiles = existsSync(runtimeDir) ? listTree(runtimeDir) : [];
 
 const installs = [];
-// src/ dirs except skills/ (the template) are harnesses; sorted: order leaks into the root README
+// src/ dirs except skills/ (the template) and runtime/ (shared helpers) are harnesses; sorted: order leaks into the root README
 const harnesses = readdirSync(src, { withFileTypes: true })
-  .filter((entry) => entry.isDirectory() && entry.name !== "skills")
+  .filter((entry) => entry.isDirectory() && entry.name !== "skills" && entry.name !== "runtime")
   .map((entry) => entry.name)
   .sort();
 for (const harness of harnesses) {
@@ -81,6 +88,10 @@ for (const harness of harnesses) {
     ...skillFiles.map((file) => [
       join(target, relative(src, file)),
       [render(readFileSync(file, "utf8"), values, `${harness}: ${relative(src, file)}`), execFiles.has(file)],
+    ]),
+    ...runtimeFiles.map((file) => [
+      join(target, relative(src, file)),
+      [readFileSync(file, "utf8"), false],
     ]),
   ]);
 

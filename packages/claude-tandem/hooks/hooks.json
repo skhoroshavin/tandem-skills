@@ -5,8 +5,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "cat",
-            "args": ["${CLAUDE_PLUGIN_ROOT}/prompt.md"]
+            "command": "node",
+            "args": ["${CLAUDE_PLUGIN_ROOT}/hooks/inject.mjs"]
           }
         ]
       }

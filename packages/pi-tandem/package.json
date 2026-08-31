@@ -6,6 +6,7 @@
   "license": "MIT",
   "files": [
     "extensions/",
+    "runtime/",
     "skills/",
     "prompt.md",
     "LICENSE",

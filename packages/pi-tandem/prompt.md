@@ -27,14 +27,27 @@
 
 A number of CLI tools are installed on this laptop and fully authenticated, you're encouraged to use them when the situation calls for it.
 
+<!--cli:gh-->
 - Use `gh` for anything GitHub: managing repos, issues, PRs, releases, workflows, API calls. For endpoints the CLI does not cover, use `gh api`
 - Don't hammer GitHub with repeated gh calls for reading code - instead check whether repo is already cloned locally to a sibling folder, if not clone it, and grep locally
-- Commits messages should be terse one-liners, never include extended multi-line descriptions
 - For PR descriptions apply the same communication rules as in the Communication section above
 - Show the exact commit or PR title and description before creating them, so user can correct you
+<!--/cli-->
+<!--cli:jira-->
+- Use `jira` for anything Jira related, including searching for and reading tickets and comments, as well as creating and updating tickets and comments under them
+<!--/cli-->
+<!--cli:aws-->
+- Use `aws` when you need to check what's happening in AWS accounts
+- When using AWS CLI always pass --profile and --region explicitly. The profile is usually clear from context - if it is not, ask, never guess
+<!--/cli-->
+<!--cli:saml2aws-->
+- AWS credentials are short-lived: on an expired or invalid token error, ask the user to run saml2aws login --idp-account <profile> --skip-prompt themselves, giving them the full command to copy-paste
+<!--/cli-->
+<!--cli:osascript-->
 - Use `osascript` with `execute <tab> javascript "<js>"` to read pages and interact using the user's
   real logged-in sessions (analyzing dashboards, checking Google Calendar and Mail, etc)
 - If a needed site is not open, opening a new tab for it is acceptable on request.
+<!--/cli-->
 
 Important:
 - Read-only commands, like checking state of GHA workflow or reading web page content, are fine without asking
