@@ -1,0 +1,12 @@
+{
+  "name": "tandem-skills",
+  "owner": {
+    "name": "Sergei Khoroshavin"
+  },
+  "plugins": [
+    {
+      "name": "tandem",
+      "source": "./packages/claude-tandem"
+    }
+  ]
+}

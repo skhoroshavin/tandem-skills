@@ -2,17 +2,9 @@
 
 ## Install
 
-Claude Code:
-
 ```bash
 claude plugin marketplace add skhoroshavin/tandem-skills
 claude plugin install tandem@tandem-skills
-```
-
-Pi Coding Agent:
-
-```bash
-pi install npm:pi-tandem
 ```
 
 ## Attribution
