@@ -1,0 +1,82 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: "Bump type"
+        required: true
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+
+permissions:
+  contents: write
+  id-token: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+        with:
+          ref: main
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Verify render is in sync
+        run: node src/render.mjs && git diff --exit-code
+
+      - name: Bump version
+        id: bump
+        working-directory: packages/pi-tandem
+        run: |
+          VERSION=$(npm version ${{ inputs.bump }} --no-git-tag-version)
+          VERSION=${VERSION#v}
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Set plugin version
+        env:
+          VERSION: ${{ steps.bump.outputs.version }}
+        run: |
+          node -e '
+            const { readFileSync, writeFileSync } = require("fs");
+            const pluginPath = "packages/claude-tandem/.claude-plugin/plugin.json";
+            const plugin = JSON.parse(readFileSync(pluginPath, "utf8"));
+            plugin.version = process.env.VERSION;
+            writeFileSync(pluginPath, JSON.stringify(plugin, null, 2) + "\n");
+          '
+
+      - name: Publish to npm
+        working-directory: packages/pi-tandem
+        run: npm publish --provenance
+
+      - name: Commit, tag and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          TAG="v${{ steps.bump.outputs.version }}"
+          git add packages/pi-tandem/package.json packages/claude-tandem/.claude-plugin/plugin.json
+          git commit -m "Release $TAG"
+          git tag -a "$TAG" -m "$TAG"
+          git push origin main --follow-tags
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.bump.outputs.version }}
+          generate_release_notes: true
+          make_latest: true

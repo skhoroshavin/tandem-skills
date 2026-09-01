@@ -21,4 +21,8 @@ build output. Both are committed; keep them in sync via the renderer.
 node src/render.mjs          # render src/ -> packages/ and root README.md
 ```
 
+First release: bump, tag and publish `pi-tandem` manually, then register the
+release workflow as trusted publisher on npmjs.com; later releases use the
+workflow.
+
 Rendering requires Node >= 20.12 (`readdirSync` recursive, `Dirent.parentPath`).
