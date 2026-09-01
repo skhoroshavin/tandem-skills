@@ -1,5 +1,5 @@
 {
   "name": "tandem",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Shared agent system prompt and skills for Claude Code for working in pair-programming style"
 }

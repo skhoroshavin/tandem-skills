@@ -1,12 +1,14 @@
 {
   "name": "pi-tandem",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/skhoroshavin/tandem-skills.git"
   },
   "description": "Shared agent system prompt and skills for pi, from the tandem-skills repo",
-  "keywords": ["pi-package"],
+  "keywords": [
+    "pi-package"
+  ],
   "license": "MIT",
   "files": [
     "extensions/",
