@@ -20,7 +20,7 @@ export function isOnPath(binary) {
 
 // Chromium-family binary for the headless-render fallback; PATH first, then app bundles
 function findBrowserBinary() {
-  for (const name of ["chromium", "chromium-browser", "brave", "brave-browser", "google-chrome", "google-chrome-stable"]) {
+  for (const name of ["brave", "brave-browser", "chromium", "chromium-browser", "google-chrome", "google-chrome-stable"]) {
     if (isOnPath(name)) return name;
   }
   if (process.platform === "darwin") {
@@ -41,16 +41,18 @@ function toolAvailable(tool, browser) {
 }
 
 export function filterCliTools(raw) {
-  let any = false;
+  let hasTools = false;
   const browser = findBrowserBinary();
-  const filtered = raw.replace(
-    /<!--cli:([a-z0-9]+)-->\r?\n?([\s\S]*?)<!--\/cli-->\r?\n?/g,
-    (_marker, tool, body) => {
-      if (!toolAvailable(tool, browser)) return "";
-      any = true;
-      return body;
-    },
-  ).replace(/\n{3,}/g, "\n\n");
-  const out = browser ? filtered.split("<browser-binary>").join(JSON.stringify(browser)) : filtered;
-  return any ? out : out.replace(/\n## CLI tools[\s\S]*?(?=\n## )/, "");
+  const filtered = raw
+    .replace(
+      /<!--cli:([a-z0-9]+)-->\r?\n?([\s\S]*?)<!--\/cli-->\r?\n?/g,
+      (_marker, tool, body) => {
+        if (!toolAvailable(tool, browser)) return "";
+        hasTools = true;
+        return body;
+      },
+    )
+    .replace(/<browser-binary>/g, () => (browser ? JSON.stringify(browser) : "<browser-binary>"))
+    .replace(/\n{3,}/g, "\n\n");
+  return hasTools ? filtered : filtered.replace(/\n## CLI tools[\s\S]*?(?=\n## )/, "");
 }

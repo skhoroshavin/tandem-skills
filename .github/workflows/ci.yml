@@ -12,7 +12,8 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: "24"
-      - run: node src/render.mjs && git diff --exit-code
+      - name: Check render sync
+        run: node src/render.mjs && git diff --exit-code
       - name: Typecheck pi extension
         working-directory: packages/pi-tandem
         run: |

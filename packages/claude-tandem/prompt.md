@@ -49,15 +49,16 @@ A number of CLI tools are installed on this laptop and fully authenticated, you'
 <!--cli:saml2aws-->
 - AWS credentials are short-lived: on an expired or invalid token error, ask the user to run saml2aws login --idp-account <profile> --skip-prompt themselves, giving them the full command to copy-paste
 <!--/cli-->
-<!--cli:pandoc-->
-- Use `pandoc` to read documents as markdown or plain text: `pandoc input.docx -o output.md` (also works for odt, rtf, html, latex)
-- For HTML fetched from the web: always convert it to text instead of reading raw - `curl -s <url> | pandoc -f html -t plain`. Read the actual HTML only when the task requires seeing the tags
-<!--/cli-->
-<!--cli:browser-->
-- Empty or stub-only output usually means the page is JS-rendered or bot-blocked: render it with a headless browser (`<browser-binary> --headless --disable-gpu --user-data-dir=$(mktemp -d) --dump-dom --virtual-time-budget=5000 <url>`) and pipe the dumped HTML through pandoc the same way
-<!--/cli-->
 <!--cli:pdftotext-->
 - Use `pdftotext` to extract text from PDFs: `pdftotext input.pdf output.txt`, or `pdftotext input.pdf -` to print to stdout
+<!--/cli-->
+<!--cli:pandoc-->
+- Use `pandoc` to read documents other than pdf as markdown or plain text: `pandoc input.docx -o output.md` (also works for odt, rtf, html, ...)
+- Unless your task requires seeing actual tags, always convert HTML fetched from the web to plain text or markdown, instead of reading it raw, for example when using `curl`: `curl -s <url> | pandoc -f html -t plain`.
+<!--/cli-->
+<!--cli:browser-->
+- Use a real headless browser when you need to read a JS-rendered or bot-blocked page: `<browser-binary> --headless --disable-gpu --user-data-dir=$(mktemp -d) --dump-dom --virtual-time-budget=5000 <url>`
+- When in doubt, always try `curl` first before resorting to a headless browser
 <!--/cli-->
 <!--cli:osascript-->
 - Use `osascript` with `execute <tab> javascript "<js>"` to read pages and interact using the user's
