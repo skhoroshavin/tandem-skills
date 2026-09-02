@@ -18,18 +18,41 @@ export function isOnPath(binary) {
   return false;
 }
 
+// Chromium-family binary for the headless-render fallback; PATH first, then app bundles
+function findBrowserBinary() {
+  for (const name of ["brave", "brave-browser", "chromium", "chromium-browser", "google-chrome", "google-chrome-stable"]) {
+    if (isOnPath(name)) return name;
+  }
+  if (process.platform === "darwin") {
+    for (const app of ["Brave Browser", "Chromium", "Google Chrome", "Microsoft Edge"]) {
+      const bin = `/Applications/${app}.app/Contents/MacOS/${app}`;
+      try {
+        if (statSync(bin).isFile()) return bin;
+      } catch {}
+    }
+  }
+}
+
 // drop <!--cli:tool--> blocks for absent tools, and the whole section when none remain
+function toolAvailable(tool, browser) {
+  if (tool === "browser") return browser !== undefined;
+  if (tool === "osascript") return process.platform === "darwin" && isOnPath(tool);
+  return isOnPath(tool);
+}
+
 export function filterCliTools(raw) {
-  let any = false;
-  const filtered = raw.replace(
-    /<!--cli:([a-z0-9]+)-->\n([\s\S]*?)<!--\/cli-->\n?/g,
-    (_marker, tool, body) => {
-      const available =
-        tool === "osascript" ? process.platform === "darwin" && isOnPath(tool) : isOnPath(tool);
-      if (!available) return "";
-      any = true;
-      return body;
-    },
-  ).replace(/\n{3,}/g, "\n\n");
-  return any ? filtered : filtered.replace(/\n## CLI tools[\s\S]*?(?=\n## )/, "");
+  let hasTools = false;
+  const browser = findBrowserBinary();
+  const filtered = raw
+    .replace(
+      /<!--cli:([a-z0-9]+)-->\r?\n?([\s\S]*?)<!--\/cli-->\r?\n?/g,
+      (_marker, tool, body) => {
+        if (!toolAvailable(tool, browser)) return "";
+        hasTools = true;
+        return body;
+      },
+    )
+    .replace(/<browser-binary>/g, () => (browser ? JSON.stringify(browser) : "<browser-binary>"))
+    .replace(/\n{3,}/g, "\n\n");
+  return hasTools ? filtered : filtered.replace(/\n## CLI tools[\s\S]*?(?=\n## )/, "");
 }

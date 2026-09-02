@@ -5,11 +5,17 @@ on:
   pull_request:
 
 jobs:
-  render-sync:
+  check:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v6
         with:
           node-version: "24"
-      - run: node src/render.mjs && git diff --exit-code
+      - name: Check render sync
+        run: node src/render.mjs && git diff --exit-code
+      - name: Typecheck pi extension
+        working-directory: packages/pi-tandem
+        run: |
+          npm ci
+          npx tsc --noEmit

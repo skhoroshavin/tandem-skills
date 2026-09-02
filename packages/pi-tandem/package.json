@@ -9,6 +9,7 @@
   "keywords": [
     "pi-package"
   ],
+  "type": "module",
   "license": "MIT",
   "files": [
     "extensions/",
@@ -17,5 +18,10 @@
     "prompt.md",
     "LICENSE",
     "README.md"
-  ]
+  ],
+  "devDependencies": {
+    "@earendil-works/pi-coding-agent": "^0.84.4",
+    "@types/node": "^26.4.1",
+    "typescript": "^7.0.2"
+  }
 }

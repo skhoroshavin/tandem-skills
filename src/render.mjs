@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Renders src/ templates into packages/<harness>-tandem/ and the root README.md
-import { readFileSync, writeFileSync, readdirSync, statSync, lstatSync, existsSync, mkdirSync, chmodSync, rmSync } from "node:fs";
-import { join, dirname, relative, sep } from "node:path";
+import { readFileSync, writeFileSync, readdirSync, statSync, existsSync, mkdirSync, chmodSync, rmSync } from "node:fs";
+import { join, dirname, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const repo = dirname(dirname(fileURLToPath(import.meta.url)));
@@ -35,18 +35,6 @@ function render(text, values, where) {
   const leftover = out.match(/{{[^}]*}}/);
   if (leftover) throw new Error(`${where}: unresolved placeholder: ${leftover[0]}`);
   return out;
-}
-
-// writes follow symlinks; a symlinked segment would silently redirect them (e.g. into src/)
-function assertNoSymlinkPath(root, path) {
-  let current = root;
-  for (const segment of relative(root, path).split(sep)) {
-    current = join(current, segment);
-    const stats = lstatSync(current, { throwIfNoEntry: false });
-    if (stats?.isSymbolicLink()) {
-      throw new Error(`refusing to write through symlink: ${current}`);
-    }
-  }
 }
 
 const listTree = (dir) =>
@@ -95,15 +83,14 @@ for (const harness of harnesses) {
     ]),
   ]);
 
-  const stale = existsSync(join(target, "skills"))
-    ? listTree(join(target, "skills")).filter((path) => !outputs.has(path))
-    : [];
+  const stale = ["skills", "runtime"]
+    .flatMap((dir) => (existsSync(join(target, dir)) ? listTree(join(target, dir)) : []))
+    .filter((path) => !outputs.has(path));
   if (!values.install && existsSync(join(target, "README.md"))) {
     stale.push(join(target, "README.md"));
   }
 
   for (const [dest, [content, exec]] of outputs) {
-    assertNoSymlinkPath(target, dest);
     mkdirSync(dirname(dest), { recursive: true });
     writeFileSync(dest, content);
     chmodSync(dest, exec ? 0o755 : 0o644);
@@ -117,6 +104,5 @@ for (const harness of harnesses) {
 
 const rootReadme = render(readmeTemplate, { install: installs.join("\n\n") }, "root: README.md");
 const rootPath = join(repo, "README.md");
-assertNoSymlinkPath(repo, rootPath);
 writeFileSync(rootPath, rootReadme);
 console.log("root: rendered README.md");

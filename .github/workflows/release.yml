@@ -59,10 +59,6 @@ jobs:
             writeFileSync(pluginPath, JSON.stringify(plugin, null, 2) + "\n");
           '
 
-      - name: Publish to npm
-        working-directory: packages/pi-tandem
-        run: npm publish --provenance
-
       - name: Commit, tag and push
         run: |
           git config user.name "github-actions[bot]"
@@ -73,6 +69,10 @@ jobs:
           git commit -m "Release $TAG"
           git tag -a "$TAG" -m "$TAG"
           git push origin main --follow-tags
+
+      - name: Publish to npm
+        working-directory: packages/pi-tandem
+        run: npm publish --provenance
 
       - name: Create GitHub release
         uses: softprops/action-gh-release@v3
