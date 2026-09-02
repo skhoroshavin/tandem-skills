@@ -52,6 +52,8 @@ A number of CLI tools are installed on this laptop and fully authenticated, you'
 <!--cli:pandoc-->
 - Use `pandoc` to read documents as markdown or plain text: `pandoc input.docx -o output.md` (also works for odt, rtf, html, latex)
 - For HTML fetched from the web: always convert it to text instead of reading raw - `curl -s <url> | pandoc -f html -t plain`. Read the actual HTML only when the task requires seeing the tags
+<!--/cli-->
+<!--cli:browser-->
 - Empty or stub-only output usually means the page is JS-rendered or bot-blocked: render it with a headless browser (`<browser-binary> --headless --disable-gpu --user-data-dir=$(mktemp -d) --dump-dom --virtual-time-budget=5000 <url>`) and pipe the dumped HTML through pandoc the same way
 <!--/cli-->
 <!--cli:pdftotext-->

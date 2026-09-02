@@ -34,15 +34,19 @@ function findBrowserBinary() {
 }
 
 // drop <!--cli:tool--> blocks for absent tools, and the whole section when none remain
+function toolAvailable(tool, browser) {
+  if (tool === "browser") return browser !== undefined;
+  if (tool === "osascript") return process.platform === "darwin" && isOnPath(tool);
+  return isOnPath(tool);
+}
+
 export function filterCliTools(raw) {
   let any = false;
   const browser = findBrowserBinary();
   const filtered = raw.replace(
-    /<!--cli:([a-z0-9]+)-->\n([\s\S]*?)<!--\/cli-->\n?/g,
+    /<!--cli:([a-z0-9]+)-->\r?\n?([\s\S]*?)<!--\/cli-->\r?\n?/g,
     (_marker, tool, body) => {
-      const available =
-        tool === "osascript" ? process.platform === "darwin" && isOnPath(tool) : isOnPath(tool);
-      if (!available) return "";
+      if (!toolAvailable(tool, browser)) return "";
       any = true;
       return body;
     },
