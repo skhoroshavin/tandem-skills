@@ -7,17 +7,15 @@ import { fileURLToPath } from "node:url";
 const repo = dirname(dirname(fileURLToPath(import.meta.url)));
 const src = join(repo, "src");
 
-function loadValues(harnessDir) {
+function loadValues(harnessDir, harness) {
   const value = (name) => {
     const path = join(harnessDir, name);
     return existsSync(path) ? readFileSync(path, "utf8").trimEnd() : "";
   };
-  const prefix = value("prompt-prefix.md");
   return {
-    // prefix is inlined into the template; blank line separates it from the body
-    prompt_prefix: prefix ? `${prefix}\n\n` : "",
+    harness,
+    prompt_prefix: value("prompt-prefix.md"),
     worker_cmd: value("worker-cmd.txt"),
-    harness: value("harness.txt"),
     install: value("install.md"),
     install_label: value("install-label.txt"),
   };
@@ -51,8 +49,7 @@ assertBalancedCliMarkers(promptTemplate, "src/prompt.md");
 const readmeTemplate = readFileSync(join(src, "README.md"), "utf8");
 const licenseText = readFileSync(join(repo, "LICENSE"), "utf8");
 const skillFiles = listTree(join(src, "skills"));
-const runtimeDir = join(src, "runtime");
-const runtimeFiles = existsSync(runtimeDir) ? listTree(runtimeDir) : [];
+const runtimeFiles = listTree(join(src, "runtime"));
 const execFiles = new Set([...skillFiles, ...runtimeFiles].filter((f) => statSync(f).mode & 0o111));
 
 const installs = [];
@@ -62,7 +59,7 @@ const harnesses = readdirSync(src, { withFileTypes: true })
   .map((entry) => entry.name)
   .sort();
 for (const harness of harnesses) {
-  const values = loadValues(join(src, harness));
+  const values = loadValues(join(src, harness), harness);
   if (values.install) {
     installs.push(
       values.install_label
@@ -73,7 +70,7 @@ for (const harness of harnesses) {
   const target = join(repo, "packages", `${harness}-tandem`);
 
   const outputs = new Map([
-    [join(target, "prompt.md"), [render(promptTemplate, values, `${harness}: prompt.md`), false]],
+    [join(target, "prompt.md"), [render(promptTemplate, values, `${harness}: prompt.md`).trimStart(), false]],
     [join(target, "LICENSE"), [licenseText, false]],
     ...(values.install
       ? [[join(target, "README.md"), [render(readmeTemplate, values, `${harness}: README.md`), false]]]

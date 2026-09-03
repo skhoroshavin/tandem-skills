@@ -9,11 +9,6 @@ model="${2:-}"
 [[ "$name" =~ ^[a-z0-9][a-z0-9-]{0,30}$ ]] || { echo "error: bad name" >&2; exit 2; }
 [[ -n "${TMUX:-}" ]] || { echo "error: not inside tmux" >&2; exit 2; }
 
-model_flag=""
-if [[ -n "$model" ]]; then
-  model_flag=" --model $model"
-fi
-
 task="$(cat)"
 [[ -n "$task" ]] || { echo "error: empty task on stdin" >&2; exit 2; }
 
@@ -42,8 +37,11 @@ prompt=${prompt//\'/\'\\\'\'}
 
 # a crashed run may have left a stale result for this name
 rm -f "$result"
-tmux new-window -c "$PWD" -n "$name" \
-  "claude$model_flag '$prompt'"
+if [[ -n "$model" ]]; then
+  tmux new-window -c "$PWD" -n "$name" "claude --model $model '$prompt'"
+else
+  tmux new-window -c "$PWD" -n "$name" "claude '$prompt'"
+fi
 tmux set-option -w -t "$name" automatic-rename off
 
 echo "Worker spawned in tmux window \"$name\". Terminate with: tmux kill-window -t $name"
