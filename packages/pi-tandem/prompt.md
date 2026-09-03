@@ -50,7 +50,7 @@ A number of CLI tools are installed on this laptop and fully authenticated, you'
 - Use `pandoc` to read documents other than pdf as markdown: `pandoc input.docx -o output.md` (also works for odt, rtf, html, ...)
 <!--/cli-->
 <!--cli:html2text-->
-- To read a web page without its markup, convert it to markdown: `curl -s <url> | html2text --ignore-images --no-wrap-links` (the Python html2text, install e.g. via `pipx install html2text`; note that relative links stay relative when piping HTML)
+- Unless your task requires seeing actual tags, always convert HTML fetched from the web to markdown instead of reading it raw, for example when using `curl`: `curl -s <url> | html2text --ignore-images --no-wrap-links`.
 <!--/cli-->
 <!--cli:browser-->
 - Use a real headless browser when you need to read a JS-rendered or bot-blocked page: `<browser-binary> --headless --disable-gpu --user-data-dir=$(mktemp -d) --dump-dom --virtual-time-budget=5000 <url>`

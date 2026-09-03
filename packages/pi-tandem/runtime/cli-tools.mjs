@@ -1,6 +1,7 @@
 // Shared runtime helpers, copied verbatim into every package's runtime/ dir.
 // Files filtered by this module must contain <!--cli:tool-->...<!--/cli--> blocks.
 
+import { spawnSync } from "node:child_process";
 import { statSync } from "node:fs";
 import { delimiter, join } from "node:path";
 
@@ -33,9 +34,22 @@ function findBrowserBinary() {
   }
 }
 
+// brew/apt ship a different C++-based html2text with an incompatible CLI;
+// only the Python one supports the --ignore-images flag used in the prompt
+function isPythonHtml2text() {
+  if (!isOnPath("html2text")) return false;
+  try {
+    const res = spawnSync("html2text", ["--help"], { encoding: "utf8", timeout: 5000 });
+    return res.status === 0 && (res.stdout || "").includes("--ignore-images");
+  } catch {
+    return false;
+  }
+}
+
 // drop <!--cli:tool--> blocks for absent tools, and the whole section when none remain
 function toolAvailable(tool, browser) {
   if (tool === "browser") return browser !== undefined;
+  if (tool === "html2text") return isPythonHtml2text();
   if (tool === "osascript") return process.platform === "darwin" && isOnPath(tool);
   return isOnPath(tool);
 }
