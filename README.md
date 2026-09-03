@@ -32,7 +32,7 @@ Modern coding agents lean toward autonomy: multi-file changes in one go, subagen
 The plugin notices which CLI tools are actually installed on your machine, and for each one it finds, adds a short note telling the model that the tool is available and recommended to use. Installing these gets you significantly more out of this package:
 
 - `gh` - GitHub CLI: repos, issues, PRs, releases, workflows
-- `pandoc` - read docx/odt/rtf/html (and fetched web pages) as text instead of raw markup
+- `pandoc` - read docx/odt/rtf/html (and fetched web pages) as markdown instead of raw markup
 - `pdftotext` (poppler) - extract text from PDFs
 - a Chromium-based browser (Brave, Chromium, Chrome, Edge) - headless-render fallback for JS-heavy or bot-blocked pages
 - `osascript` (macOS only) - drive the user's real browser sessions via AppleScript
