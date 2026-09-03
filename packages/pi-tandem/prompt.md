@@ -78,7 +78,7 @@ When explicitly instructed to run a task in a separate or fresh agent session ("
 EOF
 ```
 
-- If asked for a specific model, pass it after the task name: `--model <model>`
+- If asked for a specific model, pass it after the task name: `<spawn-script> <task-name> <model>`
 - The script opens a tmux window named `<task-name>` running `pi --no-session`, sends the task to it together with instructions for reporting back after user approval, and prints how to terminate the worker
 - After spawning, stop and wait: do not poll the worker pane and do not read the result file early. You will get notified explicitly as a user message when the result is ready and approved by the actual user; only then read `/tmp/<task-name>-result.md` and clean up the window
 <!--/cli-->
@@ -91,8 +91,8 @@ When explicitly instructed to run a task in a separate or fresh agent session ("
 EOF
 ```
 
-- If asked for a specific model, pass it after the task name: `--model <model>`
-- The script starts a background paseo agent with this session's provider and model, titled `<task-name>`, sends the task to it together with instructions for reporting back after user approval, and prints how to terminate the worker
+- If asked for a specific model, pass it after the task name: `<spawn-script> <task-name> <model>`
+- The script starts a background paseo agent titled `<task-name>`, sends the task to it together with instructions for reporting back after user approval, and prints how to terminate the worker
 - After spawning, stop and wait: do not poll the worker and do not read the result file early. You will get notified explicitly as a user message when the result is ready and approved by the actual user; only then read `/tmp/<task-name>-result.md` and clean up (`paseo archive --force <agent-id>`)
 <!--/cli-->
 

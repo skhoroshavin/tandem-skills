@@ -17,6 +17,7 @@ function loadValues(harnessDir) {
     // prefix is inlined into the template; blank line separates it from the body
     prompt_prefix: prefix ? `${prefix}\n\n` : "",
     worker_cmd: value("worker-cmd.txt"),
+    harness: value("harness.txt"),
     install: value("install.md"),
     install_label: value("install-label.txt"),
   };

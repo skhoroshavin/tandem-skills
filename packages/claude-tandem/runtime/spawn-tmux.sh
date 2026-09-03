@@ -1,21 +1,18 @@
 #!/usr/bin/env bash
 # Spawn a fresh worker agent session in a new tmux window.
-# Usage: spawn-tmux.sh <task-name> [--model <model>]   (full task on stdin)
+# Usage: spawn-tmux.sh <task-name> [<model>]   (full task on stdin)
 set -euo pipefail
 
-name="${1:?usage: spawn-tmux.sh <task-name> [--model <model>] (full task on stdin)}"
-shift
-model_flag=""
-if [[ "${1:-}" == "--model" ]]; then
-  [[ $# -ge 2 ]] || { echo "error: --model needs a value" >&2; exit 2; }
-  # plain model ids only: the flag is embedded in a tmux command string
-  [[ "$2" =~ ^[A-Za-z0-9._:/-]+$ ]] || { echo "error: bad model" >&2; exit 2; }
-  model_flag=" --model $2"
-  shift 2
-fi
-[[ $# -eq 0 ]] || { echo "error: unexpected args: $*" >&2; exit 2; }
+name="${1:?usage: spawn-tmux.sh <task-name> [<model>] (full task on stdin)}"
+model="${2:-}"
+[[ $# -le 2 ]] || { echo "error: unexpected args: $*" >&2; exit 2; }
 [[ "$name" =~ ^[a-z0-9][a-z0-9-]{0,30}$ ]] || { echo "error: bad name" >&2; exit 2; }
 [[ -n "${TMUX:-}" ]] || { echo "error: not inside tmux" >&2; exit 2; }
+
+model_flag=""
+if [[ -n "$model" ]]; then
+  model_flag=" --model $model"
+fi
 
 task="$(cat)"
 [[ -n "$task" ]] || { echo "error: empty task on stdin" >&2; exit 2; }
