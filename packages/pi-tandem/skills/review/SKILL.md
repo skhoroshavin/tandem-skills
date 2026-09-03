@@ -9,14 +9,13 @@ Workflow:
 
 1. Read the subject in full and everything it touches before judging; the worst review mistakes come from reviewing the artifact alone.
 2. Besides plain errors, flag contradictions, ambiguity, untestable claims, speculative scope and wordy bloat.
-3. Ask the user one question at a time about anything you cannot reliably decide yourself from context alone, for example:
-   - unknown intent - whether the function must also handle the empty-list case, which would change the fix
-   - a trade-off between two correct fixes - the small guard clause vs fixing the shared parser once
-   - missing external context - whether CI depends on the file at hand, what latency the cache was added for
-   - a scope call - whether a barely used flag can go, or its feature ships next week
+3. Ask the user one question at a time about anything you cannot reliably decide yourself from the subject, its surroundings or existing conventions, like:
+   - actual need - whether a given edge case really requires a guard, config option or extra explanation, before pushing to add it or flagging its removal
+   - competing fixes - two valid solutions with different costs, where the choice is the user's to make
+   - preference calls - shorter vs clearer, more detail vs leaner, stricter vs friendlier: ask what matters more before pushing one side
 4. Report per the rules below.
 
-When the subject includes code, load the `coding` skill first and apply it in full when judging the change. Besides bugs, flag NIH syndrome, overengineering, unnecessary dependencies, obvious copy paste and other similar code bloats. Give accompanying tests the same, if not higher, level of attention: unreadable, overcomplicated tests explain nothing, and a test that would also pass without the change proves nothing.
+When the subject includes code, load the `coding` skill first and apply it in full when judging the subject. Besides bugs, flag NIH syndrome, overengineering, unnecessary dependencies, obvious copy paste and other similar code bloats. Give accompanying tests the same, if not higher, level of attention: unreadable, overcomplicated tests explain nothing, and a test that would also pass without the change proves nothing.
 
 Report rules:
 
