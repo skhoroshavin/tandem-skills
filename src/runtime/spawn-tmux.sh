@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # Spawn a fresh worker agent session in a new tmux window.
-# Usage: spawn-subagent.sh <task-name> [--model <model>]   (full task on stdin)
+# Usage: spawn-tmux.sh <task-name> [--model <model>]   (full task on stdin)
 set -euo pipefail
 
-name="${1:?usage: spawn-subagent.sh <task-name> [--model <model>] (full task on stdin)}"
+name="${1:?usage: spawn-tmux.sh <task-name> [--model <model>] (full task on stdin)}"
 shift
 model_flag=""
 if [[ "${1:-}" == "--model" ]]; then
@@ -46,7 +46,7 @@ prompt=${prompt//\'/\'\\\'\'}
 # a crashed run may have left a stale result for this name
 rm -f "$result"
 tmux new-window -c "$PWD" -n "$name" \
-  "pi --no-session$model_flag '$prompt'"
+  "{{worker_cmd}}$model_flag '$prompt'"
 tmux set-option -w -t "$name" automatic-rename off
 
 echo "Worker spawned in tmux window \"$name\". Terminate with: tmux kill-window -t $name"
