@@ -47,26 +47,30 @@ function isPythonHtml2text() {
 }
 
 // drop <!--cli:tool--> blocks for absent tools, and the whole section when none remain
-function toolAvailable(tool, browser) {
-  if (tool === "browser") return browser !== undefined;
-  if (tool === "html2text") return isPythonHtml2text();
+function toolAvailable(tool, ctx) {
+  if (tool === "browser") return ctx.browser !== undefined;
+  if (tool === "html2text") return ctx.html2text;
+  if (tool === "lynx") return !ctx.html2text && isOnPath(tool);
   if (tool === "osascript") return process.platform === "darwin" && isOnPath(tool);
   return isOnPath(tool);
 }
 
 export function filterCliTools(raw) {
   let hasTools = false;
-  const browser = findBrowserBinary();
+  const ctx = {
+    browser: findBrowserBinary(),
+    html2text: isPythonHtml2text(),
+  };
   const filtered = raw
     .replace(
       /<!--cli:([a-z0-9]+)-->\r?\n?([\s\S]*?)<!--\/cli-->\r?\n?/g,
       (_marker, tool, body) => {
-        if (!toolAvailable(tool, browser)) return "";
+        if (!toolAvailable(tool, ctx)) return "";
         hasTools = true;
         return body;
       },
     )
-    .replace(/<browser-binary>/g, () => (browser ? JSON.stringify(browser) : "<browser-binary>"))
+    .replace(/<browser-binary>/g, () => (ctx.browser ? JSON.stringify(ctx.browser) : "<browser-binary>"))
     .replace(/\n{3,}/g, "\n\n");
   return hasTools ? filtered : filtered.replace(/\n## CLI tools[\s\S]*?(?=\n## )/, "");
 }

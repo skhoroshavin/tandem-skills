@@ -23,6 +23,7 @@ The plugin notices which CLI tools are actually installed on your machine, and f
 - `gh` - GitHub CLI: repos, issues, PRs, releases, workflows
 - `pandoc` - read docx/odt/rtf as markdown instead of raw markup
 - `html2text` (Python, e.g. via `pipx install html2text`) - read web pages as markdown instead of raw markup
+- `lynx` - plain-text fallback for web pages when the Python `html2text` is not installed
 - `pdftotext` (poppler) - extract text from PDFs
 - a Chromium-based browser (Brave, Chromium, Chrome, Edge) - headless-render fallback for JS-heavy or bot-blocked pages
 - `osascript` (macOS only) - drive the user's real browser sessions via AppleScript
