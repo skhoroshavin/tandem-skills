@@ -23,7 +23,10 @@ Modern coding agents lean toward autonomy: multi-file changes in one go, subagen
 
 ## What's inside
 
-- **Pair-work prompt patch** - collaboration style (lock-step, explicit go-aheads), terse communication rules, and a "lazy senior" coding discipline: no speculative abstractions, deletion over addition, root-cause fixes
+- **Pair-work prompt patch** - collaboration style (lock-step, explicit go-aheads) and terse communication rules
+- **Skills**, loaded on demand:
+  - **Coding discipline** - a "lazy senior" standard for code changes: no speculative abstractions, deletion over addition, root-cause fixes
+  - **Code review** - checks code for bugs and bloat, actionable findings only, proposes the smallest fix
 - **Interactive subagent workflow** to run a task in a fresh session on request (a new tmux window or a background paseo agent), with full visibility and control
 - **Tool-specific instructions** (`gh`, `aws`, `jira`, ...), added to the prompt only if the tool is actually installed
 
@@ -43,7 +46,7 @@ The plugin notices which CLI tools are actually installed on your machine, and f
 
 ## Attribution
 
-The "lazy senior" part of the coding section in the prompt is adapted from [ponytail](https://github.com/DietrichGebert/ponytail) by DietrichGebert (MIT).
+The "lazy senior" part of the coding skill is adapted from [ponytail](https://github.com/DietrichGebert/ponytail) by DietrichGebert (MIT).
 
 ## License
 
