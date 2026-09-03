@@ -7,27 +7,29 @@ import { fileURLToPath } from "node:url";
 const repo = dirname(dirname(fileURLToPath(import.meta.url)));
 const src = join(repo, "src");
 
-function loadValues(harnessDir) {
+function loadValues(harnessDir, harness) {
   const value = (name) => {
     const path = join(harnessDir, name);
     return existsSync(path) ? readFileSync(path, "utf8").trimEnd() : "";
   };
-  const prefix = value("prompt-prefix.md");
   return {
-    // prefix is inlined into the template; blank line separates it from the body
-    prompt_prefix: prefix ? `${prefix}\n\n` : "",
+    harness,
+    prompt_prefix: value("prompt-prefix.md"),
     worker_cmd: value("worker-cmd.txt"),
     install: value("install.md"),
     install_label: value("install-label.txt"),
   };
 }
 
-function render(text, values, where) {
+function assertBalancedCliMarkers(text, where) {
   const openers = (text.match(/<!--cli:/g) || []).length;
   const closers = (text.match(/<!--\/cli-->/g) || []).length;
   if (openers !== closers) {
     throw new Error(`${where}: unbalanced cli markers: ${openers} openers, ${closers} closers`);
   }
+}
+
+function render(text, values, where) {
   const out = text.replace(/{{([a-z_]+)}}/g, (match, key) => {
     if (!(key in values)) throw new Error(`${where}: unresolved placeholder: ${match}`);
     return values[key];
@@ -43,12 +45,12 @@ const listTree = (dir) =>
     .map((e) => join(e.parentPath, e.name));
 
 const promptTemplate = readFileSync(join(src, "prompt.md"), "utf8");
+assertBalancedCliMarkers(promptTemplate, "src/prompt.md");
 const readmeTemplate = readFileSync(join(src, "README.md"), "utf8");
 const licenseText = readFileSync(join(repo, "LICENSE"), "utf8");
 const skillFiles = listTree(join(src, "skills"));
-const execFiles = new Set(skillFiles.filter((f) => statSync(f).mode & 0o111));
-const runtimeDir = join(src, "runtime");
-const runtimeFiles = existsSync(runtimeDir) ? listTree(runtimeDir) : [];
+const runtimeFiles = listTree(join(src, "runtime"));
+const execFiles = new Set([...skillFiles, ...runtimeFiles].filter((f) => statSync(f).mode & 0o111));
 
 const installs = [];
 // src/ dirs except skills/ (the template) and runtime/ (shared helpers) are harnesses; sorted: order leaks into the root README
@@ -57,7 +59,7 @@ const harnesses = readdirSync(src, { withFileTypes: true })
   .map((entry) => entry.name)
   .sort();
 for (const harness of harnesses) {
-  const values = loadValues(join(src, harness));
+  const values = loadValues(join(src, harness), harness);
   if (values.install) {
     installs.push(
       values.install_label
@@ -68,7 +70,7 @@ for (const harness of harnesses) {
   const target = join(repo, "packages", `${harness}-tandem`);
 
   const outputs = new Map([
-    [join(target, "prompt.md"), [render(promptTemplate, values, `${harness}: prompt.md`), false]],
+    [join(target, "prompt.md"), [render(promptTemplate, values, `${harness}: prompt.md`).trimStart(), false]],
     [join(target, "LICENSE"), [licenseText, false]],
     ...(values.install
       ? [[join(target, "README.md"), [render(readmeTemplate, values, `${harness}: README.md`), false]]]
@@ -79,7 +81,7 @@ for (const harness of harnesses) {
     ]),
     ...runtimeFiles.map((file) => [
       join(target, relative(src, file)),
-      [readFileSync(file, "utf8"), false],
+      [render(readFileSync(file, "utf8"), values, `${harness}: ${relative(src, file)}`), execFiles.has(file)],
     ]),
   ]);
 

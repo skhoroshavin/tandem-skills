@@ -1,19 +1,11 @@
 #!/usr/bin/env bash
 # Spawn a fresh worker agent session in a new tmux window.
-# Usage: spawn-subagent.sh <task-name> [--model <model>]   (full task on stdin)
+# Usage: spawn-tmux.sh <task-name> [<model>]   (full task on stdin)
 set -euo pipefail
 
-name="${1:?usage: spawn-subagent.sh <task-name> [--model <model>] (full task on stdin)}"
-shift
-model_flag=""
-if [[ "${1:-}" == "--model" ]]; then
-  [[ $# -ge 2 ]] || { echo "error: --model needs a value" >&2; exit 2; }
-  # plain model ids only: the flag is embedded in a tmux command string
-  [[ "$2" =~ ^[A-Za-z0-9._:/-]+$ ]] || { echo "error: bad model" >&2; exit 2; }
-  model_flag=" --model $2"
-  shift 2
-fi
-[[ $# -eq 0 ]] || { echo "error: unexpected args: $*" >&2; exit 2; }
+name="${1:?usage: spawn-tmux.sh <task-name> [<model>] (full task on stdin)}"
+model="${2:-}"
+[[ $# -le 2 ]] || { echo "error: unexpected args: $*" >&2; exit 2; }
 [[ "$name" =~ ^[a-z0-9][a-z0-9-]{0,30}$ ]] || { echo "error: bad name" >&2; exit 2; }
 [[ -n "${TMUX:-}" ]] || { echo "error: not inside tmux" >&2; exit 2; }
 
@@ -45,8 +37,11 @@ prompt=${prompt//\'/\'\\\'\'}
 
 # a crashed run may have left a stale result for this name
 rm -f "$result"
-tmux new-window -c "$PWD" -n "$name" \
-  "{{worker_cmd}}$model_flag '$prompt'"
+if [[ -n "$model" ]]; then
+  tmux new-window -c "$PWD" -n "$name" "claude --model $model '$prompt'"
+else
+  tmux new-window -c "$PWD" -n "$name" "claude '$prompt'"
+fi
 tmux set-option -w -t "$name" automatic-rename off
 
 echo "Worker spawned in tmux window \"$name\". Terminate with: tmux kill-window -t $name"

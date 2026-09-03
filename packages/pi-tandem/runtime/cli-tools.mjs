@@ -3,7 +3,13 @@
 
 import { spawnSync } from "node:child_process";
 import { statSync } from "node:fs";
-import { delimiter, join } from "node:path";
+import { delimiter, dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+
+const spawnScript = join(
+  dirname(fileURLToPath(import.meta.url)),
+  process.env.PASEO_AGENT_ID ? "spawn-paseo.sh" : "spawn-tmux.sh",
+);
 
 // windows executables are found via fixed suffixes (.exe etc)
 const extensions = process.platform === "win32" ? [".EXE", ".BAT", ".CMD"] : [""];
@@ -52,6 +58,8 @@ function toolAvailable(tool, ctx) {
   if (tool === "html2text") return ctx.html2text;
   if (tool === "lynx") return !ctx.html2text && isOnPath(tool);
   if (tool === "osascript") return process.platform === "darwin" && isOnPath(tool);
+  if (tool === "paseo") return !!process.env.PASEO_AGENT_ID;
+  if (tool === "tmux") return !process.env.PASEO_AGENT_ID && !!process.env.TMUX;
   return isOnPath(tool);
 }
 
@@ -71,6 +79,7 @@ export function filterCliTools(raw) {
       },
     )
     .replace(/<browser-binary>/g, () => (ctx.browser ? JSON.stringify(ctx.browser) : "<browser-binary>"))
+    .replace(/<spawn-script>/g, () => JSON.stringify(spawnScript))
     .replace(/\n{3,}/g, "\n\n");
   return hasTools ? filtered : filtered.replace(/\n## CLI tools[\s\S]*?(?=\n## )/, "");
 }

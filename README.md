@@ -24,7 +24,7 @@ Modern coding agents lean toward autonomy: multi-file changes in one go, subagen
 ## What's inside
 
 - **Pair-work prompt patch** - collaboration style (lock-step, explicit go-aheads), terse communication rules, and a "lazy senior" coding discipline: no speculative abstractions, deletion over addition, root-cause fixes
-- **`subagent` skill** to run a task in a fresh agent session on request, with full visibility and control, instead of harness-managed subagents
+- **Interactive subagent workflow** to run a task in a fresh session on request (a new tmux window or a background paseo agent), with full visibility and control
 - **Tool-specific instructions** (`gh`, `aws`, `jira`, ...), added to the prompt only if the tool is actually installed
 
 ## Recommended tools
@@ -39,6 +39,7 @@ The plugin notices which CLI tools are actually installed on your machine, and f
 - `pandoc` - convert docx/odt/rtf to markdown
 - `osascript` (macOS only) - drive the user's real browser sessions via AppleScript
 - `jira`, `aws`, `saml2aws` - if your workflow includes them
+- `tmux` or `paseo` - run the main session inside one of these to get the interactive subagent workflow
 
 ## Attribution
 
