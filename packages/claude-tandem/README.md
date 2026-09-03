@@ -19,6 +19,7 @@ Modern coding agents lean toward autonomy: multi-file changes in one go, subagen
 - **Skills**, loaded on demand:
   - **Coding discipline** - a "lazy senior" standard for code changes: no speculative abstractions, deletion over addition, root-cause fixes
   - **Code review** - checks code for bugs and bloat, actionable findings only, proposes the smallest fix
+  - **Pull requests** - branch, title and description rules, calibrated to the repo's merged PRs
 - **Interactive subagent workflow** to run a task in a fresh session on request (a new tmux window or a background paseo agent), with full visibility and control
 - **Tool-specific instructions** (`gh`, `aws`, `jira`, ...), added to the prompt only if the tool is actually installed
 

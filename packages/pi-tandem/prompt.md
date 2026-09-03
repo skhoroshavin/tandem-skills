@@ -30,8 +30,7 @@ A number of CLI tools are installed on this laptop and fully authenticated, you'
 <!--cli:gh-->
 - Use `gh` for anything GitHub: managing repos, issues, PRs, releases, workflows, API calls. For endpoints the CLI does not cover, use `gh api`
 - Don't hammer GitHub with repeated gh calls for reading code - instead check whether repo is already cloned locally to a sibling folder, if not clone it, and grep locally
-- For PR descriptions apply the same communication rules as in the Communication section above
-- Show the exact commit or PR title and description before creating them, so user can correct you
+- Show the exact commit message before creating it, so user can correct you
 <!--/cli-->
 <!--cli:jira-->
 - Use `jira` for anything Jira related, including searching for and reading tickets and comments, as well as creating and updating tickets and comments under them
