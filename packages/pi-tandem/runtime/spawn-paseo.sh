@@ -35,8 +35,20 @@ parent with a one-line pointer (never result content):
 
     paseo send --no-wait '$PASEO_AGENT_ID' 'Result ready: $result'"
 
+# paseo run has no default provider: mirror this session's provider/model,
+# read from our own agent record (no env vars expose them)
+parent="$(paseo inspect --json "$PASEO_AGENT_ID")"
+provider="$(printf '%s' "$parent" | node -e 'const a = JSON.parse(require("fs").readFileSync(0, "utf8")); console.log(a.Model ? `${a.Provider}/${a.Model}` : a.Provider)')"
+[[ "$provider" =~ ^[A-Za-z0-9._:/-]+$ ]] || { echo "error: could not read provider/model from parent agent" >&2; exit 2; }
+if [[ -n "$model_flag" ]]; then
+  run_flags="--provider ${provider%%/*} $model_flag"
+else
+  run_flags="--provider $provider"
+fi
+
 # a crashed run may have left a stale result for this name
 rm -f "$result"
-id="$(paseo run -q --background --title "$name" $model_flag "$prompt")"
+id="$(paseo run -q --background --title "$name" $run_flags "$prompt")"
+[[ -n "$id" ]] || { echo "error: paseo run did not return an agent id" >&2; exit 1; }
 
-echo "Worker spawned as paseo agent \"$id\". Terminate with: paseo archive \"$id\""
+echo "Worker spawned as paseo agent \"$id\". Terminate with: paseo archive --force \"$id\""
