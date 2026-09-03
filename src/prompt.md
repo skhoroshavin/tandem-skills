@@ -47,8 +47,8 @@ A number of CLI tools are installed on this laptop and fully authenticated, you'
 - Use `pdftotext` to extract text from PDFs: `pdftotext input.pdf output.txt`, or `pdftotext input.pdf -` to print to stdout
 <!--/cli-->
 <!--cli:pandoc-->
-- Use `pandoc` to read documents other than pdf as markdown or plain text: `pandoc input.docx -o output.md` (also works for odt, rtf, html, ...)
-- Unless your task requires seeing actual tags, always convert HTML fetched from the web to plain text or markdown, instead of reading it raw, for example when using `curl`: `curl -s <url> | pandoc -f html -t plain`.
+- Use `pandoc` to read documents other than pdf as markdown: `pandoc input.docx -o output.md` (also works for odt, rtf, html, ...)
+- Unless your task requires seeing actual tags, always convert HTML fetched from the web to markdown instead of reading it raw, for example when using `curl`: `curl -s <url> | pandoc -f html -t gfm`.
 <!--/cli-->
 <!--cli:browser-->
 - Use a real headless browser when you need to read a JS-rendered or bot-blocked page: `<browser-binary> --headless --disable-gpu --user-data-dir=$(mktemp -d) --dump-dom --virtual-time-budget=5000 <url>`
