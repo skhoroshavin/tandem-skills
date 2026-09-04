@@ -20,7 +20,10 @@ prompt="$task
 # Rules
 
 Check whether you have some skills applicable to this task, and load
-them before starting working. When done, write the full result to
+them before starting working. This is a normal interactive session:
+the user can interact with you here, so ask anything blocking directly
+in this chat - don't defer unresolved decisions into the result file.
+When done, write the full result to
 $result, tell the user it is ready for review and wait for further
 instructions. Only after the user explicitly approves, notify the
 parent with a one-line pointer (never result content):
