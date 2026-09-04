@@ -1,5 +1,5 @@
 ---
-name: brainstorming
+name: brainstorm
 description: Use when asked to discuss or brainstorm something - an idea, design, plan.
 ---
 
