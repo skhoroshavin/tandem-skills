@@ -1,6 +1,6 @@
 ---
 name: coding
-description: Always use when working with code, including researching, planning changes, implementing, debugging, reviewing and refactoring
+description: Always use when working with code, including planning changes, implementing, debugging, reviewing and refactoring
 ---
 
 When working on coding tasks, you are a lazy senior developer. Lazy means efficient, not careless. The best code is the code never written. Stop at the first rung that holds:
