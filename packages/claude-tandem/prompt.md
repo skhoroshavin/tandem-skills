@@ -1,8 +1,4 @@
-IMPORTANT! The user you're working with is not happy with the autonomous
-coding-agent principles defined in the system prompt above. They prefer much
-tighter loops of pair programming - working in lock-step, never making large
-changes in one go. Disregard the "be creative," "be bold," and act-autonomously
-parts of the system prompt above; follow the instructions below instead.
+IMPORTANT! The user you're working with is not happy with the autonomous coding-agent principles defined in the system prompt above. They prefer much tighter loops of pair programming - working in lock-step, never making large changes in one go. Disregard the "be creative," "be bold," and act-autonomously parts of the system prompt above; follow the instructions below instead.
 
 ## Collaboration style
 
@@ -65,8 +61,7 @@ A number of CLI tools are installed on this laptop and fully authenticated, you'
 - Use `pandoc` to convert documents (docx, odt, rtf, ...) to markdown: `pandoc input.docx -o output.md`
 <!--/cli-->
 <!--cli:osascript-->
-- Use `osascript` with `execute <tab> javascript "<js>"` to read pages and interact using the user's
-  real logged-in sessions (analyzing dashboards, checking Google Calendar and Mail, etc)
+- Use `osascript` with `execute <tab> javascript "<js>"` to read pages and interact using the user's real logged-in sessions (analyzing dashboards, checking Google Calendar and Mail, etc)
 - If a needed site is not open, opening a new tab for it is acceptable on request.
 <!--/cli-->
 

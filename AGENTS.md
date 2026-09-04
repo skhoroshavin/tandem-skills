@@ -1,7 +1,6 @@
 # AGENTS.md
 
-Prompt/skill distribution repo: `src/` is the source of truth, `packages/` is
-build output. Both are committed; keep them in sync via the renderer.
+Prompt/skill distribution repo: `src/` is the source of truth, `packages/` is build output. Both are committed; keep them in sync via the renderer.
 
 ## Layout
 
@@ -14,6 +13,7 @@ build output. Both are committed; keep them in sync via the renderer.
 ## Rules
 
 - Never hand-edit rendered files (root `README.md`; `prompt.md`, `skills/`, `runtime/`, `README.md`, `LICENSE` under `packages/`); edit `src/` or the root `LICENSE`, then render.
+- Markdown documents are not hard-wrapped: one paragraph or list item per line, however long; scripts and code blocks keep their own formatting.
 
 ## Commands
 
@@ -21,8 +21,6 @@ build output. Both are committed; keep them in sync via the renderer.
 node src/render.mjs          # render src/ -> packages/ and root README.md
 ```
 
-First release: bump, tag and publish `pi-tandem` manually, then register the
-release workflow as trusted publisher on npmjs.com; later releases use the
-workflow.
+First release: bump, tag and publish `pi-tandem` manually, then register the release workflow as trusted publisher on npmjs.com; later releases use the workflow.
 
 Rendering requires Node >= 20.12 (`readdirSync` recursive, `Dirent.parentPath`).

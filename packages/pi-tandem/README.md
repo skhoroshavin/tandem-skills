@@ -16,6 +16,7 @@ Modern coding agents lean toward autonomy: multi-file changes in one go, subagen
 
 - **Pair-work prompt patch** - collaboration style (lock-step, explicit go-aheads) and terse communication rules
 - **Skills**, loaded on demand:
+  - **Research** - pairs with you digging through data, documents and code to get a verified answer to a question
   - **Brainstorming** - interviews you about the idea one question at a time, or rubber ducks while you think out loud, until you and the model get on the same page
   - **Coding** - "lazy senior" discipline for code changes: no speculative abstractions, deletion over addition, root-cause fixes
   - **Review** - interactively checks code and documents for errors and bloat, actionable findings only
