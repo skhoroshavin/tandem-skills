@@ -24,4 +24,5 @@ Report rules:
   - what is wrong and why it matters in 1-3 lines
   - the smallest fix as a concrete diff or replacement text; "consider" and "could" are not fixes
 - No praise, no summary, no restating the request, no advice beyond findings.
+- No questions in the report - they all should have been asked in chat first, one at a time, as part of the workflow.
 - If nothing actionable: say exactly that, plus one line on what was checked.
