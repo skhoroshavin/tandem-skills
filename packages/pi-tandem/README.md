@@ -41,6 +41,8 @@ The plugin notices which CLI tools are actually installed on your machine, and f
 
 The "lazy senior" part of the coding skill is adapted from [ponytail](https://github.com/DietrichGebert/ponytail) by DietrichGebert (MIT).
 
+The brainstorming skill's interview method (facts vs. decisions, one question at a time, throwaway probes) is inspired by ideas from the brainstorming skill in [superpowers](https://github.com/obra/superpowers) by obra and the grilling skill in [skills](https://github.com/mattpocock/skills) by mattpocock (both MIT).
+
 ## License
 
 MIT. See [LICENSE](./LICENSE).
