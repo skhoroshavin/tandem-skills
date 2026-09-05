@@ -3,7 +3,7 @@ name: review
 description: Use when asked to review any kind of artifact, including code, documents and configs.
 ---
 
-The review is read-only: never modify tracked files, the index, HEAD, or branch state; running builds and tests to verify the change is fine.
+The review is read-only: never modify tracked files, the index, HEAD, or branch state; running builds or tests, when the subject has them, is fine.
 
 Workflow:
 
