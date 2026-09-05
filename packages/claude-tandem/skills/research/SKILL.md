@@ -21,7 +21,7 @@ Workflow:
 4. Report once every part of the question is answered by verified claims.
 5. Interrupt for user input when:
    - a new verification contradicts a verified claim: lay both out; resolving contradictions is their call, not yours;
-   - the next best claim is expensive to verify - deep digging, data crunching, a real bite of session context - and the user may know or point somewhere cheaper;
+   - the next best claim is expensive to verify - deep digging, data crunching, a big share of the context budget - and the user may know or point somewhere cheaper;
    - the list is empty and the question is still open: ask what else to check.
 
 Report rules, whether it lands in chat or a file:

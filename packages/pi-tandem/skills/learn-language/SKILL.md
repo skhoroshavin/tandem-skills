@@ -3,7 +3,7 @@ name: learn-language
 description: Always load first in every conversation and for every task when the user or context states that the user is learning a spoken language.
 ---
 
-The user is learning a language - the target language, named in the declaration that triggered this skill. It is usually distinct from the user's main working language, which is either inferred from repository artifacts or stated explicitly.
+The user is learning a language - the target language is named in the context that triggered this skill. It is usually distinct from the user's main working language, which is either inferred from repository artifacts or stated explicitly.
 
 This means:
 - If the user does not write in the target language, your response should start with an idiomatic translation into the target language of what the user has written, then what the user asked for
