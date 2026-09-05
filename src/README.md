@@ -19,6 +19,7 @@ Modern coding agents lean toward autonomy: multi-file changes in one go, subagen
   - **Coding** - "lazy senior" discipline for code changes: no speculative abstractions, deletion over addition, root-cause fixes
   - **Review** - interactively checks code and documents for errors and bloat, actionable findings only
   - **Pull requests** - branch, title and description rules, calibrated to the repo's merged PRs
+  - **Learn language** - optional practice of a foreign language as you work, suitable for every level, even beginners
 - **Interactive subagents** - fresh-context workers you can steer and must approve; details in the [Interactive subagents](#interactive-subagents) section
 - **Tool-specific instructions** (`gh`, `aws`, `jira`, ...), added to the prompt only if the tool is actually installed
 
