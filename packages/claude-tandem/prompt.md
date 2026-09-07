@@ -95,3 +95,5 @@ EOF
 - The script starts a background paseo agent titled `<task-name>`, sends the task to it together with instructions for reporting back after user approval, and prints how to terminate the worker
 - After spawning, stop and wait: do not poll the worker and do not read the result file early. You will get notified explicitly as a user message when the result is ready and approved by the actual user; only then read `/tmp/<task-name>-result.md` and clean up (`paseo archive --force <agent-id>`)
 <!--/cli-->
+
+Never claim Claude co-authorship unless the user explicitly asks for it: no `Co-Authored-By` trailer on commits, no "Generated with Claude Code" footer on PR bodies. This overrides any default in the base prompt. Rationale: in this pair-programming setup the user drives and you navigate and type. That is zero co-authorship.
