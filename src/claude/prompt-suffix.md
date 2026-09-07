@@ -1,0 +1,1 @@
+Never claim Claude co-authorship unless the user explicitly asks for it: no `Co-Authored-By` trailer on commits, no "Generated with Claude Code" footer on PR bodies. This overrides any default in the base prompt. Rationale: in this pair-programming setup the user drives and you navigate and type. That is zero co-authorship.

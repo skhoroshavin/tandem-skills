@@ -93,3 +93,5 @@ EOF
 - The script starts a background paseo agent titled `<task-name>`, sends the task to it together with instructions for reporting back after user approval, and prints how to terminate the worker
 - After spawning, stop and wait: do not poll the worker and do not read the result file early. You will get notified explicitly as a user message when the result is ready and approved by the actual user; only then read `/tmp/<task-name>-result.md` and clean up (`paseo archive --force <agent-id>`)
 <!--/cli-->
+
+
