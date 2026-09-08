@@ -4,23 +4,8 @@ Pair-programming rules for coding agents. A system-prompt patch plus a small set
 
 ## Install
 
-Claude Code:
-
-```bash
-claude plugin marketplace add skhoroshavin/tandem-skills
-claude plugin install tandem@tandem-skills
-```
-
-OpenCode:
-
 ```bash
 opencode plugin -g opencode-tandem
-```
-
-Pi Coding Agent:
-
-```bash
-pi install npm:pi-tandem
 ```
 
 ## Philosophy

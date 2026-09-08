@@ -1,0 +1,10 @@
+{
+  "name": "opencode-tandem",
+  "version": "0.4.7",
+  "description": "Shared agent system prompt and skills for OpenCode for working in pair-programming style",
+  "type": "module",
+  "license": "MIT",
+  "main": "./plugin.js",
+  "files": ["plugin.js", "prompt.md", "skills/", "runtime/"],
+  "exports": { "./server": "./plugin.js" }
+}
