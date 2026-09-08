@@ -4,7 +4,6 @@
   "description": "Shared agent system prompt and skills for OpenCode for working in pair-programming style",
   "type": "module",
   "license": "MIT",
-  "main": "./plugin.js",
   "files": [
     "plugin.js",
     "prompt.md",
@@ -13,5 +12,9 @@
   ],
   "exports": {
     "./server": "./plugin.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/skhoroshavin/tandem-skills.git"
   }
 }
