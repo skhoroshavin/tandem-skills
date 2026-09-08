@@ -1,0 +1,20 @@
+{
+  "name": "opencode-tandem",
+  "version": "0.4.7-alpha.ed2150a",
+  "description": "Shared agent system prompt and skills for OpenCode, from the tandem-skills repo",
+  "type": "module",
+  "license": "MIT",
+  "files": [
+    "plugin.js",
+    "prompt.md",
+    "skills/",
+    "runtime/"
+  ],
+  "exports": {
+    "./server": "./plugin.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/skhoroshavin/tandem-skills.git"
+  }
+}

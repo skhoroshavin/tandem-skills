@@ -1,22 +1,18 @@
 #!/usr/bin/env bash
-# Spawn a fresh worker agent session in a new tmux window.
-# Usage: spawn-tmux.sh <task-name> [<model>]   (full task on stdin)
+# Spawn a fresh worker agent session in the background via the local paseo daemon.
+# Usage: spawn-paseo.sh <task-name> [<model>]   (full task on stdin)
 set -euo pipefail
 
-name="${1:?usage: spawn-tmux.sh <task-name> [<model>] (full task on stdin)}"
+name="${1:?usage: spawn-paseo.sh <task-name> [<model>] (full task on stdin)}"
 model="${2:-}"
 [[ $# -le 2 ]] || { echo "error: unexpected args: $*" >&2; exit 2; }
 [[ "$name" =~ ^[a-z0-9][a-z0-9-]{0,30}$ ]] || { echo "error: bad name" >&2; exit 2; }
-[[ -n "${TMUX:-}" ]] || { echo "error: not inside tmux" >&2; exit 2; }
+[[ -n "${PASEO_AGENT_ID:-}" ]] || { echo "error: not inside a paseo agent session" >&2; exit 2; }
 
 task="$(cat)"
 [[ -n "$task" ]] || { echo "error: empty task on stdin" >&2; exit 2; }
 
-# resolve via our own pane: display-message without -t resolves to the
-# window the user is looking at, not the agent's
-parent="$(tmux display-message -p -t "$TMUX_PANE" '#{session_name}:#{window_name}')"
-# the name keys the window and the result file: keep it unique among
-# live workers
+# the name keys the result file: keep it unique among live workers
 result="/tmp/${name}-result.md"
 
 prompt="You are a worker session, spawned from a parent agent session, but you are not an
@@ -34,24 +30,20 @@ Then tell the user it is ready for review and wait for further instructions. Onl
 the user explicitly approves, notify the parent with a one-line pointer (never result
 content):
 
-    tmux send-keys -t '$parent' 'Result ready: $result' Enter
+    paseo send --no-wait '$PASEO_AGENT_ID' 'Result ready: $result'
 
 IMPORTANT! Even if the task below reads like a spec handed to an autonomous worker - it
 is not; it is a user's brief for this interactive session.
 
 $task"
 
-# make the prompt safe for the sh -c string tmux runs in the new window
-# (must stay unquoted: inside double quotes bash mangles the \' escaping)
-prompt=${prompt//\'/\'\\\'\'}
-
 # a crashed run may have left a stale result for this name
 rm -f "$result"
 if [[ -n "$model" ]]; then
-  tmux new-window -c "$PWD" -n "$name" "{{worker_cmd_model}}"
+  id="$(paseo run -q --background --title "$name" --provider opencode --model "$model" "$prompt")"
 else
-  tmux new-window -c "$PWD" -n "$name" "{{worker_cmd}}"
+  id="$(paseo run -q --background --title "$name" --provider opencode "$prompt")"
 fi
-tmux set-option -w -t "$name" automatic-rename off
+[[ -n "$id" ]] || { echo "error: paseo run did not return an agent id" >&2; exit 1; }
 
-echo "Worker spawned in tmux window \"$name\". Terminate with: tmux kill-window -t $name"
+echo "Worker spawned as paseo agent \"$id\". Terminate with: paseo archive --force \"$id\""

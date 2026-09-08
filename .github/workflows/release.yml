@@ -39,7 +39,7 @@ jobs:
       - name: Verify render is in sync
         run: node src/render.mjs && git diff --exit-code
 
-      - name: Bump version
+      - name: Bump pi-tandem version
         id: bump
         working-directory: packages/pi-tandem
         run: |
@@ -47,7 +47,7 @@ jobs:
           VERSION=${VERSION#v}
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
-      - name: Set plugin version
+      - name: Bump claude-tandem version
         env:
           VERSION: ${{ steps.bump.outputs.version }}
         run: |
@@ -59,19 +59,27 @@ jobs:
             writeFileSync(pluginPath, JSON.stringify(plugin, null, 2) + "\n");
           '
 
+      - name: Bump opencode-tandem version
+        working-directory: packages/opencode-tandem
+        run: npm version ${{ steps.bump.outputs.version }} --no-git-tag-version
+
       - name: Commit, tag and push
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
           TAG="v${{ steps.bump.outputs.version }}"
-          git add packages/pi-tandem/package.json packages/claude-tandem/.claude-plugin/plugin.json
+          git add packages/pi-tandem/package.json packages/claude-tandem/.claude-plugin/plugin.json packages/opencode-tandem/package.json
           git commit -m "Release $TAG"
           git tag -a "$TAG" -m "$TAG"
           git push origin main --follow-tags
 
-      - name: Publish to npm
+      - name: Publish pi-tandem to npm
         working-directory: packages/pi-tandem
+        run: npm publish --provenance
+
+      - name: Publish opencode-tandem to npm
+        working-directory: packages/opencode-tandem
         run: npm publish --provenance
 
       - name: Create GitHub release

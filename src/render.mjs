@@ -17,6 +17,7 @@ function loadValues(harnessDir, harness) {
     prompt_prefix: value("prompt-prefix.md"),
     prompt_suffix: value("prompt-suffix.md"),
     worker_cmd: value("worker-cmd.txt"),
+    worker_cmd_model: value("worker-cmd-model.txt"),
     install: value("install.md"),
     install_label: value("install-label.txt"),
   };

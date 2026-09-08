@@ -1,1 +1,1 @@
-pi --no-session
+pi --no-session '$prompt'
