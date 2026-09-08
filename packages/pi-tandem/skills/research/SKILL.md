@@ -17,12 +17,12 @@ Workflow:
    - verified: move it over; queue the new claims it suggests;
    - refuted: its opposite is verified; queue what that opens up;
    - not directly checkable: swap it for intermediate claims that would settle it.
-3. Verify by tracing the real thing end to end; a plausible story is not verification. "No such thing" counts only when you looked everywhere it could be - and when the answer hangs on a "no", check it again from another angle. When a probe would settle a claim more cheaply or more reliably than reading - a throwaway script, a query, a client call - probe; keep probes in a scratch directory, never the repo.
+3. Verify by tracing the real thing end to end; a plausible story is not verification. "No such thing" counts only when you looked everywhere it could be - and when the answer hangs on a "no", check it again from another angle. When a probe would settle a claim more cheaply or more reliably than reading - a throwaway script, a query, a client call - probe; keep probes in a scratch directory, never the repo. Settle each claim with the cheapest sufficient evidence and move on; stop mining a lead once it has answered the question asked of it.
 4. Report once every part of the question is answered by verified claims.
-5. Interrupt for user input when:
+5. Never continue past these without asking the user:
    - a new verification contradicts a verified claim: lay both out; resolving contradictions is their call, not yours;
    - a lead of yours is clearly better than the user's: propose the swap, but if they still press their lead, follow their lead, don't switch silently;
-   - the next best claim is expensive to verify - deep digging, data crunching, a big share of the context budget - and the user may know or point somewhere cheaper;
+   - you are about to go deeper - start checking another repo, do another set of probes - on top of significant context already spent; the user may rather settle for what's verified so far, or point to a shortcut;
    - the list is empty and the question is still open: ask what else to check.
 
 Report rules, whether it lands in chat or a file:
