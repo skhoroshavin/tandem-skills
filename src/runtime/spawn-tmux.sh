@@ -48,9 +48,9 @@ prompt=${prompt//\'/\'\\\'\'}
 # a crashed run may have left a stale result for this name
 rm -f "$result"
 if [[ -n "$model" ]]; then
-  tmux new-window -c "$PWD" -n "$name" "{{worker_cmd}} --model $model '$prompt'"
+  tmux new-window -c "$PWD" -n "$name" "{{worker_cmd_model}}"
 else
-  tmux new-window -c "$PWD" -n "$name" "{{worker_cmd}} '$prompt'"
+  tmux new-window -c "$PWD" -n "$name" "{{worker_cmd}}"
 fi
 tmux set-option -w -t "$name" automatic-rename off
 

@@ -79,7 +79,7 @@ EOF
 ```
 
 - If asked for a specific model, pass it after the task name: `<spawn-script> <task-name> <model>`
-- The script opens a tmux window named `<task-name>` running `{{worker_cmd}}`, and sends it the task prepended with complete rules of its own - collaboration mode, skills to load, the result file (always `/tmp/<task-name>-result.md`), user review and approval, notifying this session when done - so the brief needs task content and context only, never process, delivery or tooling rules; it also prints how to terminate the worker
+- The script opens a tmux window named `<task-name>` running `{{harness}}`, and sends it the task prepended with complete rules of its own - collaboration mode, skills to load, the result file (always `/tmp/<task-name>-result.md`), user review and approval, notifying this session when done - so the brief needs task content and context only, never process, delivery or tooling rules; it also prints how to terminate the worker
 - After spawning, stop and wait: do not poll the worker pane and do not read the result file early. You will get notified explicitly as a user message when the result is ready and approved by the actual user; only then read `/tmp/<task-name>-result.md` and clean up the window
 <!--/cli-->
 <!--cli:paseo-->
