@@ -1,7 +1,7 @@
 {
   "name": "opencode-tandem",
   "version": "0.4.7-alpha.ed2150a",
-  "description": "Shared agent system prompt and skills for OpenCode for working in pair-programming style",
+  "description": "Shared agent system prompt and skills for OpenCode, from the tandem-skills repo",
   "type": "module",
   "license": "MIT",
   "files": [
