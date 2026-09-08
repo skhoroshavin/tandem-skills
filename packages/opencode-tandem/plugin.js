@@ -10,7 +10,7 @@ export const Tandem = async () => ({
   config: (config) => {
     config.agent ??= {};
     config.agent.tandem = {
-      name: "Tandem",
+      name: "tandem",
       description: "Pair-programming collaborator: you drive, it navigates and types",
       mode: "primary",
       prompt,
