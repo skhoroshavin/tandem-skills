@@ -47,10 +47,17 @@ prompt=${prompt//\'/\'\\\'\'}
 
 # a crashed run may have left a stale result for this name
 rm -f "$result"
+
+# tmux gives the new pane the server's env, not the caller's - forward ours
+envargs=()
+while IFS= read -r -d '' kv; do
+  envargs+=(-e "$kv")
+done < <(env -0)
+
 if [[ -n "$model" ]]; then
-  tmux new-window -c "$PWD" -n "$name" "claude --model $model '$prompt'"
+  tmux new-window "${envargs[@]}" -c "$PWD" -n "$name" "claude --model $model '$prompt'"
 else
-  tmux new-window -c "$PWD" -n "$name" "claude '$prompt'"
+  tmux new-window "${envargs[@]}" -c "$PWD" -n "$name" "claude '$prompt'"
 fi
 tmux set-option -w -t "$name" automatic-rename off
 
