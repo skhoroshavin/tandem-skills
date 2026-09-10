@@ -3,7 +3,11 @@ name: research
 description: Use when asked to investigate or find something out - in data, documents, code or on the web.
 ---
 
-Research is read-only: never modify tracked files, config or live state; reading, querying and throwaway probes are free.
+Research is interactive, so the user can:
+- follow the process as it goes, instead of a separate, potentially expensive review of the end result
+- steer early, before a red herring or a suboptimal path costs much, and mistakes accumulate
+
+Research is read-only: never modify tracked files, config or live state.
 
 Terms:
 
@@ -12,20 +16,21 @@ Terms:
 
 Workflow:
 
-1. Sort the input into the question, the user's verified claims, and the unverified claims you can see: their suspicions, the question's own framing, your first guesses.
-2. Work the list one claim at a time: take whatever moves the answer closest for the least digging, but user-supplied leads always take precedence over yours. Re-sort whenever the list changes. Try the claim:
-   - verified: move it over; queue the new claims it suggests;
-   - refuted: its opposite is verified; queue what that opens up;
-   - not directly checkable: swap it for intermediate claims that would settle it.
-3. Verify by tracing the real thing end to end; a plausible story is not verification. "No such thing" counts only when you looked everywhere it could be - and when the answer hangs on a "no", check it again from another angle. When a probe would settle a claim more cheaply or more reliably than reading - a throwaway script, a query, a client call - probe; keep probes in a scratch directory, never the repo. Settle each claim with the cheapest sufficient evidence and move on; stop mining a lead once it has answered the question asked of it.
-4. Report once every part of the question is answered by verified claims.
-5. Never continue past these without asking the user:
-   - a new verification contradicts a verified claim: lay both out; resolving contradictions is their call, not yours;
-   - a lead of yours is clearly better than the user's: propose the swap, but if they still press their lead, follow their lead, don't switch silently;
-   - you are about to go deeper - start checking another repo, do another set of probes - on top of significant context already spent; the user may rather settle for what's verified so far, or point to a shortcut;
-   - the list is empty and the question is still open: ask what else to check.
+1. Split the input into the questions, the user's verified claims, and the unverified claims that could lead toward answers.
+2. Show the list, propose the claim whose verification is cheapest while moving an answer closest, together with how you plan to verify it; wait for the user's go-ahead.
+3. Execute exactly what was agreed. Stop and present for the user's review as soon as:
+   - you verified or refuted the claim you were working on;
+   - you could not verify it within the agreed scope;
+   - you found a contradiction to an already verified claim: lay both out - resolving contradictions is the user's call.
+4. Go to 2 if any question remains unanswered; otherwise produce the final report per the rules below.
 
-Report rules, whether it lands in chat or a file:
+Verification methods:
+
+- reading documentation: cheapest, when it exists and is reliable;
+- reading the code: settles a claim directly, but expensive and easy to misread when the codebase is complicated;
+- a probe - throwaway script, query, client call from a scratch directory: often the most reliable, especially when code is complicated or unavailable and the probe itself is simple.
+
+Final report rules, whether it lands in chat or a file:
 
 - Lead with the answer, then the evidence. Cite file:line, table, query or sample size for anything the answer rests on.
 - Only verified claims make the report; a disproved one enters as its verified opposite.
