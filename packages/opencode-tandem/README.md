@@ -1,6 +1,6 @@
 # Tandem skills
 
-Pair-programming rules for coding agents. A system-prompt patch plus a small set of skills that turn your agent harness from an autonomous code generator into a navigator: you drive, it advises and types, and nothing lands without you seeing it.
+Pair-programming rules for coding agents. A system-prompt patch plus a small set of skills that push back on agentic autonomy and give you control back: fewer unprompted antics, more actual collaboration.
 
 ## Install
 
@@ -10,20 +10,23 @@ opencode plugin -g opencode-tandem
 
 ## Philosophy
 
-Modern coding agents lean toward autonomy: multi-file changes in one go, subagent fan-out, reinforced by the system prompts of popular harnesses (especially Claude Code). The usual result is a bloated clump of code that hopefully works - and reviewing it costs more than generating it did, since you still have to read all of it. Tandem inverts this: keep changes small enough that each step is cheap to review, and prune misalignment early, before it compounds into slop. The result is both faster and higher-quality.
+Modern coding agents lean toward autonomy: multi-file changes in one go, subagent fan-out, reinforced by the system prompts of popular harnesses (especially Claude Code). The usual result is a bloated clump of code that hopefully works - and reviewing it costs more than generating it saved, since you still have to read all of it. Tandem inverts this: keep changes small enough that each step is cheap to review, and prune misalignment early, before it compounds into slop. The result is both faster and higher-quality.
 
 ## What's inside
 
-- **Pair-work prompt patch** - collaboration style (lock-step, explicit go-aheads) and terse communication rules
-- **Skills**, loaded on demand:
-  - **Research** - pairs with you digging through data, documents and code to get a verified answer to a question
+- **Pair-work prompt patch** - nudges the agent toward:
+  - fewer unprompted changes and unwelcome judgment calls
+  - more check-ins with you as it goes, so you can follow along and steer early
+  - toned-down nauseating sycophancy and "load bearing"-style LLMisms
+- **Skills**, each just a short file, loaded on demand:
+  - **Research** - verifies claims one at a time, with your go-ahead per step - a red herring or wrong conclusion gets caught while still cheap
   - **Brainstorm** - interviews you about the idea one question at a time, or rubber ducks while you think out loud, until you and the model get on the same page
-  - **Coding** - "lazy senior" discipline for code changes: no speculative abstractions, deletion over addition, root-cause fixes
-  - **Review** - interactively checks code and documents for errors and bloat, actionable findings only
-  - **Pull requests** - branch, title and description rules, calibrated to the repo's merged PRs
-  - **Learn language** - optional practice of a foreign language as you work, suitable for every level, even beginners
+  - **Coding** - "lazy senior" discipline: no speculative abstractions, deletion over addition, root-cause fixes, self-explanatory code over comment-peppering
+  - **Review** - carefully reads whatever you hand it, like docs or code, checks with you on debatable stuff, and then reports actionable findings with a fix each
+  - **Pull requests** - matches tone and length of the repo's recently merged PRs, proposes drafts before actually raising or updating a PR
+  - **Learn language** - kicks in only if you state that you are learning a language; background practice that stays out of the way of the work
 - **Interactive subagents** - fresh-context workers you can steer and must approve; details in the [Interactive subagents](#interactive-subagents) section
-- **Tool-specific instructions** (`gh`, `aws`, `jira`, ...), added to the prompt only if the tool is actually installed
+- **Tool-specific instructions** (`gh`, `aws`, `jira`, ...) - added only for tools actually installed, so nothing about a missing tool ever ends up in the prompt
 
 ## Interactive subagents
 
