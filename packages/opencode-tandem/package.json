@@ -2,6 +2,11 @@
   "name": "opencode-tandem",
   "version": "0.5.3",
   "description": "Shared agent system prompt and skills for OpenCode, from the tandem-skills repo",
+  "keywords": [
+    "opencode",
+    "tandem-skills",
+    "skills"
+  ],
   "type": "module",
   "license": "MIT",
   "files": [
