@@ -1,6 +1,6 @@
 {
   "name": "tandem",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "description": "Shared agent system prompt and skills for Codex CLI for working in pair-programming style",
   "skills": "./skills/",
   "hooks": "./hooks/hooks.json"
