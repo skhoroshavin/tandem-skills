@@ -55,6 +55,7 @@ The plugin notices which CLI tools are actually installed on your machine, and f
 - `pandoc` - convert docx/odt/rtf to markdown
 - `osascript` (macOS only) - drive the user's real browser sessions via AppleScript
 - `jira`, `aws`, `saml2aws` - if your workflow includes them
+- `gcx` (Grafana CLI) - query Grafana logs and metrics from the terminal
 - `tmux` or `paseo` - run the main session inside one of these to enable [interactive subagents](#interactive-subagents)
 
 ## Attribution
