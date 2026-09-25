@@ -75,13 +75,26 @@ jobs:
             writeFileSync(pluginPath, JSON.stringify(plugin, null, 2) + "\n");
           '
 
+      - name: Bump gemini-tandem version
+        env:
+          VERSION: ${{ steps.bump.outputs.version }}
+        run: |
+          node -e '
+            const { readFileSync, writeFileSync } = require("fs");
+            for (const path of ["packages/gemini-tandem/package.json", "packages/gemini-tandem/gemini-extension.json"]) {
+              const manifest = JSON.parse(readFileSync(path, "utf8"));
+              manifest.version = process.env.VERSION;
+              writeFileSync(path, JSON.stringify(manifest, null, 2) + "\n");
+            }
+          '
+
       - name: Commit, tag and push
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
           TAG="v${{ steps.bump.outputs.version }}"
-          git add packages/pi-tandem/package.json packages/claude-tandem/.claude-plugin/plugin.json packages/codex-tandem/.codex-plugin/plugin.json packages/opencode-tandem/package.json
+          git add packages/pi-tandem/package.json packages/claude-tandem/.claude-plugin/plugin.json packages/codex-tandem/.codex-plugin/plugin.json packages/gemini-tandem/package.json packages/gemini-tandem/gemini-extension.json packages/opencode-tandem/package.json
           git commit -m "Release $TAG"
           git tag -a "$TAG" -m "$TAG"
           git push origin main --follow-tags

@@ -4,39 +4,9 @@ Pair-programming rules for coding agents. A system-prompt patch plus a small set
 
 ## Install
 
-Claude Code:
-
-```bash
-claude plugin marketplace add skhoroshavin/tandem-skills
-claude plugin install tandem@tandem-skills
-```
-
-Codex CLI:
-
-```bash
-codex plugin marketplace add skhoroshavin/tandem-skills
-codex plugin add tandem@tandem-skills
-```
-
-On first session start Codex flags the bundled hook for review - trust it via `/hooks`.
-
-Gemini CLI:
-
 ```bash
 git clone https://github.com/skhoroshavin/tandem-skills ../tandem-skills
 gemini extensions link ../tandem-skills/packages/gemini-tandem
-```
-
-OpenCode:
-
-```bash
-opencode plugin -g opencode-tandem
-```
-
-Pi Coding Agent:
-
-```bash
-pi install npm:pi-tandem
 ```
 
 ## Philosophy

@@ -1,0 +1,6 @@
+{
+  "name": "gemini-tandem",
+  "version": "0.6.1",
+  "description": "Shared agent system prompt and skills for Gemini CLI for working in pair-programming style",
+  "type": "module"
+}
