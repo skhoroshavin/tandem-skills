@@ -50,6 +50,10 @@ A number of CLI tools are installed on this laptop and fully authenticated, you'
 - Use `gcx` to query Grafana logs and metrics: `gcx logs query '<logql>' --since 1h`, `gcx metrics query '<promql>' --since 1h`
 - Use the `--jq '<expr>'` flag to filter or reshape gcx JSON output
 <!--/cli-->
+<!--cli:slackcli-->
+- Use `slackcli` to read Slack: `slackcli conversations read <channel-or-slack-url>`, `slackcli search messages '<query>'`; add `--json` when you process the output
+- Always include the message permalink, so the user can open and reply to it in Slack
+<!--/cli-->
 <!--cli:aws-->
 - Use `aws` when you need to check what's happening in AWS accounts
 - When using AWS CLI always pass --profile and --region explicitly. The profile is usually clear from context - if it is not, ask, never guess
