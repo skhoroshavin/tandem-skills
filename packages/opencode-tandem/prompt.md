@@ -48,6 +48,10 @@ A number of CLI tools are installed on this laptop and fully authenticated, you'
 <!--cli:jira-->
 - Use `jira` for anything Jira related, including searching for and reading tickets and comments, as well as creating and updating tickets and comments under them
 <!--/cli-->
+<!--cli:gcx-->
+- Use `gcx` to query Grafana logs and metrics: `gcx logs query '<logql>' --since 1h`, `gcx metrics query '<promql>' --since 1h`
+- Use the `--jq '<expr>'` flag to filter or reshape gcx JSON output
+<!--/cli-->
 <!--cli:aws-->
 - Use `aws` when you need to check what's happening in AWS accounts
 - When using AWS CLI always pass --profile and --region explicitly. The profile is usually clear from context - if it is not, ask, never guess
