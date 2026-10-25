@@ -57,7 +57,7 @@ for (const [file] of moduleFiles) {
 }
 
 const installs = [];
-// sorted: order leaks into the root README
+// sorted: this becomes the order of install sections in the root README
 const harnesses = readdirSync(src, { withFileTypes: true })
   .filter((entry) => entry.isDirectory() && !(entry.name in moduleDirs))
   .map((entry) => entry.name)
