@@ -11,10 +11,8 @@
   "license": "MIT",
   "files": [
     "plugin.js",
-    "cli-tools/",
-    "prompt/",
-    "skills/",
-    "subagents/"
+    "lib/",
+    "skills/"
   ],
   "exports": {
     "./server": "./plugin.js"

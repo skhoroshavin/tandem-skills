@@ -1,4 +1,4 @@
-import { assemblePrompt } from "../../prompt/index.mjs";
+import { assemblePrompt } from "../../lib/prompt/index.mjs";
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 
 const prompt = assemblePrompt();

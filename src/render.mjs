@@ -43,10 +43,15 @@ const readmeTemplate = readFileSync(join(src, "README.md"), "utf8");
 const licenseText = readFileSync(join(repo, "LICENSE"), "utf8");
 // module dirs are rendered into every package at the same relative path;
 // every other directory under src/ is a harness
-const moduleDirs = ["cli-tools", "prompt", "skills", "subagents"];
-const moduleFiles = moduleDirs.flatMap((dir) => listTree(join(src, dir)));
-const execFiles = new Set(moduleFiles.filter((f) => statSync(f).mode & 0o111));
-for (const file of moduleFiles.filter((f) => f.endsWith(".md"))) {
+// module dirs render into every package; skills/ lands at the package root
+// (harnesses discover it there by convention), the rest under lib/
+const moduleDirs = { "cli-tools": "lib/cli-tools", prompt: "lib/prompt", skills: "skills", subagents: "lib/subagents" };
+const moduleFiles = Object.entries(moduleDirs).flatMap(([dir, dest]) =>
+  listTree(join(src, dir)).map((file) => [file, join(dest, relative(join(src, dir), file))]),
+);
+const execFiles = new Set(moduleFiles.map(([file]) => file).filter((f) => statSync(f).mode & 0o111));
+for (const [file] of moduleFiles) {
+  if (!file.endsWith(".md")) continue;
   const text = readFileSync(file, "utf8");
   const openers = (text.match(/<!--cli:/g) || []).length;
   const closers = (text.match(/<!--\/cli-->/g) || []).length;
@@ -58,7 +63,7 @@ for (const file of moduleFiles.filter((f) => f.endsWith(".md"))) {
 const installs = [];
 // sorted: order leaks into the root README
 const harnesses = readdirSync(src, { withFileTypes: true })
-  .filter((entry) => entry.isDirectory() && !moduleDirs.includes(entry.name))
+  .filter((entry) => entry.isDirectory() && !(entry.name in moduleDirs))
   .map((entry) => entry.name)
   .sort();
 for (const harness of harnesses) {
@@ -77,15 +82,15 @@ for (const harness of harnesses) {
     ...(values.install
       ? [[join(target, "README.md"), [render(readmeTemplate, values, `${harness}: README.md`), false]]]
       : []),
-    ...moduleFiles.map((file) => [
-      join(target, relative(src, file)),
+    ...moduleFiles.map(([file, rel]) => [
+      join(target, rel),
       [render(readFileSync(file, "utf8"), values, `${harness}: ${relative(src, file)}`), execFiles.has(file)],
     ]),
-    ...(values.prefix ? [[join(target, "prompt", "prefix.md"), [values.prefix, false]]] : []),
-    ...(values.suffix ? [[join(target, "prompt", "suffix.md"), [values.suffix, false]]] : []),
+    ...(values.prefix ? [[join(target, "lib", "prompt", "prefix.md"), [values.prefix, false]]] : []),
+    ...(values.suffix ? [[join(target, "lib", "prompt", "suffix.md"), [values.suffix, false]]] : []),
   ]);
 
-  const stale = moduleDirs
+  const stale = ["lib", "skills"]
     .flatMap((dir) => (existsSync(join(target, dir)) ? listTree(join(target, dir)) : []))
     .filter((path) => !outputs.has(path));
   if (!values.install && existsSync(join(target, "README.md"))) {
