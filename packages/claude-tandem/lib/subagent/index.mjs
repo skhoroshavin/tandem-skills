@@ -11,7 +11,7 @@ export const spawnScript = join(
   process.env.PASEO_AGENT_ID ? "spawn-paseo.sh" : "spawn-tmux.sh",
 );
 
-export function subagentsSection() {
+export function subagentSection() {
   const transport = process.env.PASEO_AGENT_ID ? "paseo.md" : process.env.TMUX ? "tmux.md" : null;
   if (!transport) return "";
   const read = (name) => readFileSync(join(here, name), "utf8").trim();

@@ -45,7 +45,7 @@ const licenseText = readFileSync(join(repo, "LICENSE"), "utf8");
 // every other directory under src/ is a harness
 // module dirs render into every package; skills/ lands at the package root
 // (harnesses discover it there by convention), the rest under lib/
-const moduleDirs = { "cli-tools": "lib/cli-tools", prompt: "lib/prompt", skills: "skills", subagents: "lib/subagents" };
+const moduleDirs = { "cli-tools": "lib/cli-tools", prompt: "lib/prompt", skills: "skills", subagent: "lib/subagent" };
 const moduleFiles = Object.entries(moduleDirs).flatMap(([dir, dest]) =>
   listTree(join(src, dir)).map((file) => [file, join(dest, relative(join(src, dir), file))]),
 );

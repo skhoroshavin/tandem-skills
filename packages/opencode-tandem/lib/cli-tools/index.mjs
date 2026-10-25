@@ -1,4 +1,4 @@
-// Emits the CLI tools section (section.md), keeping only <!--cli:tool--> blocks
+// Emits the CLI tools section (prompt.md), keeping only <!--cli:tool--> blocks
 // for tools available in this session; empty string when none are.
 import { spawnSync } from "node:child_process";
 import { readFileSync, statSync } from "node:fs";
@@ -58,7 +58,7 @@ function toolAvailable(tool, ctx) {
 export function cliToolsSection() {
   const ctx = { browser: findBrowserBinary(), html2text: isPythonHtml2text() };
   let hasTools = false;
-  const section = readFileSync(join(here, "section.md"), "utf8").replace(
+  const prompt = readFileSync(join(here, "prompt.md"), "utf8").replace(
     /<!--cli:([a-z0-9]+)-->\r?\n?([\s\S]*?)<!--\/cli-->\r?\n?/g,
     (_marker, tool, body) => {
       if (!toolAvailable(tool, ctx)) return "";
@@ -67,7 +67,7 @@ export function cliToolsSection() {
     },
   );
   if (!hasTools) return "";
-  return section
+  return prompt
     .replace(/<browser-binary>/g, () => (ctx.browser ? JSON.stringify(ctx.browser) : "<browser-binary>"))
     .replace(/\n{3,}/g, "\n\n")
     .trim();
