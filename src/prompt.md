@@ -73,7 +73,7 @@ A number of CLI tools are installed on this laptop and fully authenticated, you'
 - Unless your task requires seeing actual tags, always convert HTML fetched from the web to plain text instead of reading it raw, for example when using `curl`: `curl -s <url> | lynx -stdin -dump` (link URLs are kept in a References list).
 <!--/cli-->
 <!--cli:browser-->
-- Use a real headless browser when you need to read a JS-rendered or bot-blocked page: `<browser-binary> --headless --disable-gpu --user-data-dir=$(mktemp -d) --dump-dom --virtual-time-budget=5000 <url>`
+- Use a real headless browser when you need to read a JS-rendered or bot-blocked page: `d=$(mktemp -d); <browser-binary> --headless=new --disable-gpu --timeout=10000 --user-data-dir="$d" --dump-dom --virtual-time-budget=5000 <url> 2>/dev/null; rm -rf "$d"`. An empty or half-rendered body means the page outlasted the timeout: drop this URL and look for a faster source instead of retrying.
 - When in doubt, always try `curl` first before resorting to a headless browser
 <!--/cli-->
 <!--cli:pandoc-->
