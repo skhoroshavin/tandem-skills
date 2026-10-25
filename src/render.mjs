@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Renders src/ templates into packages/<harness>-tandem/ and the root README.md
+// Renders src/ into packages/<harness>-tandem/ and the root README.md
 import { readFileSync, writeFileSync, readdirSync, statSync, existsSync, mkdirSync, chmodSync, rmSync } from "node:fs";
 import { join, dirname, relative } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -14,21 +14,14 @@ function loadValues(harnessDir, harness) {
   };
   return {
     harness,
-    prompt_prefix: value("prompt-prefix.md"),
-    prompt_suffix: value("prompt-suffix.md"),
     worker_cmd: value("worker-cmd.txt"),
     worker_cmd_model: value("worker-cmd-model.txt"),
     install: value("install.md"),
     install_label: value("install-label.txt"),
+    // prompt edges land next to prompt/main.md in the package
+    prefix: value("prefix.md"),
+    suffix: value("suffix.md"),
   };
-}
-
-function assertBalancedCliMarkers(text, where) {
-  const openers = (text.match(/<!--cli:/g) || []).length;
-  const closers = (text.match(/<!--\/cli-->/g) || []).length;
-  if (openers !== closers) {
-    throw new Error(`${where}: unbalanced cli markers: ${openers} openers, ${closers} closers`);
-  }
 }
 
 function render(text, values, where) {
@@ -46,18 +39,26 @@ const listTree = (dir) =>
     .filter((e) => e.isFile())
     .map((e) => join(e.parentPath, e.name));
 
-const promptTemplate = readFileSync(join(src, "prompt.md"), "utf8");
-assertBalancedCliMarkers(promptTemplate, "src/prompt.md");
 const readmeTemplate = readFileSync(join(src, "README.md"), "utf8");
 const licenseText = readFileSync(join(repo, "LICENSE"), "utf8");
-const skillFiles = listTree(join(src, "skills"));
-const runtimeFiles = listTree(join(src, "runtime"));
-const execFiles = new Set([...skillFiles, ...runtimeFiles].filter((f) => statSync(f).mode & 0o111));
+// module dirs are rendered into every package at the same relative path;
+// every other directory under src/ is a harness
+const moduleDirs = ["cli-tools", "prompt", "skills", "subagents"];
+const moduleFiles = moduleDirs.flatMap((dir) => listTree(join(src, dir)));
+const execFiles = new Set(moduleFiles.filter((f) => statSync(f).mode & 0o111));
+for (const file of moduleFiles.filter((f) => f.endsWith(".md"))) {
+  const text = readFileSync(file, "utf8");
+  const openers = (text.match(/<!--cli:/g) || []).length;
+  const closers = (text.match(/<!--\/cli-->/g) || []).length;
+  if (openers !== closers) {
+    throw new Error(`${relative(src, file)}: unbalanced cli markers: ${openers} openers, ${closers} closers`);
+  }
+}
 
 const installs = [];
-// src/ dirs except skills/ (the template) and runtime/ (shared helpers) are harnesses; sorted: order leaks into the root README
+// sorted: order leaks into the root README
 const harnesses = readdirSync(src, { withFileTypes: true })
-  .filter((entry) => entry.isDirectory() && entry.name !== "skills" && entry.name !== "runtime")
+  .filter((entry) => entry.isDirectory() && !moduleDirs.includes(entry.name))
   .map((entry) => entry.name)
   .sort();
 for (const harness of harnesses) {
@@ -72,22 +73,19 @@ for (const harness of harnesses) {
   const target = join(repo, "packages", `${harness}-tandem`);
 
   const outputs = new Map([
-    [join(target, "prompt.md"), [render(promptTemplate, values, `${harness}: prompt.md`).trimStart(), false]],
     [join(target, "LICENSE"), [licenseText, false]],
     ...(values.install
       ? [[join(target, "README.md"), [render(readmeTemplate, values, `${harness}: README.md`), false]]]
       : []),
-    ...skillFiles.map((file) => [
+    ...moduleFiles.map((file) => [
       join(target, relative(src, file)),
       [render(readFileSync(file, "utf8"), values, `${harness}: ${relative(src, file)}`), execFiles.has(file)],
     ]),
-    ...runtimeFiles.map((file) => [
-      join(target, relative(src, file)),
-      [render(readFileSync(file, "utf8"), values, `${harness}: ${relative(src, file)}`), execFiles.has(file)],
-    ]),
+    ...(values.prefix ? [[join(target, "prompt", "prefix.md"), [values.prefix, false]]] : []),
+    ...(values.suffix ? [[join(target, "prompt", "suffix.md"), [values.suffix, false]]] : []),
   ]);
 
-  const stale = ["skills", "runtime"]
+  const stale = moduleDirs
     .flatMap((dir) => (existsSync(join(target, dir)) ? listTree(join(target, dir)) : []))
     .filter((path) => !outputs.has(path));
   if (!values.install && existsSync(join(target, "README.md"))) {

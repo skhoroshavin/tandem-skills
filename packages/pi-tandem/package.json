@@ -15,9 +15,10 @@
   "license": "MIT",
   "files": [
     "extensions/",
-    "runtime/",
+    "cli-tools/",
+    "prompt/",
     "skills/",
-    "prompt.md",
+    "subagents/",
     "LICENSE",
     "README.md"
   ],

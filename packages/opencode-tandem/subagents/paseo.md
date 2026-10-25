@@ -1,0 +1,1 @@
+- The script starts a paseo agent titled `<task-name>`; when done, clean up with `paseo archive --force <agent-id>`

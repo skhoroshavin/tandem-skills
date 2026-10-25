@@ -1,0 +1,3 @@
+<!--tool:codemode-->
+Use the `codemode` tool to save context on bulk work: loop over `read`/`bash` in JavaScript and return only the digest - intermediate results never enter the context. Worth it for many files distilled to one answer, and for output-heavy commands (`rg`, test runs, build logs) filtered down to a summary. Not worth it for single calls (the script costs more than it saves), for edits, or for anything the user should review step by step.
+<!--/tool-->

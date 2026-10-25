@@ -11,9 +11,10 @@
   "license": "MIT",
   "files": [
     "plugin.js",
-    "prompt.md",
+    "cli-tools/",
+    "prompt/",
     "skills/",
-    "runtime/"
+    "subagents/"
   ],
   "exports": {
     "./server": "./plugin.js"
