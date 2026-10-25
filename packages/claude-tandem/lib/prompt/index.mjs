@@ -1,4 +1,4 @@
-// Assembles the final system prompt: prefix + main + cli tools + subagent + suffix.
+// Assembles the final system prompt: prefix + body + cli tools + subagent + suffix.
 // Parts are joined with a blank line, empty parts are skipped.
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -13,7 +13,13 @@ export function assemblePrompt() {
     const path = join(here, name);
     return existsSync(path) ? readFileSync(path, "utf8").trim() : "";
   };
-  return [part("prefix.md"), part("main.md"), cliToolsSection(), subagentSection(), part("suffix.md")]
+  return [
+    part("prefix.md"),
+    part("body.md"),
+    cliToolsSection(),
+    subagentSection(),
+    part("suffix.md"),
+  ]
     .filter(Boolean)
     .join("\n\n")
     .concat("\n");

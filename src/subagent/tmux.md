@@ -1,1 +1,0 @@
-- The script opens a tmux window named `<task-name>` running `{{harness}}`; when done, clean up the window

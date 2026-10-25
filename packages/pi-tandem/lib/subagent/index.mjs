@@ -1,5 +1,5 @@
-// Picks the subagent transport available in this session (paseo inside a paseo
-// agent, tmux inside tmux) and emits its prompt section; empty string without one.
+// Emits the subagent section for the method available in this session (paseo
+// inside a paseo agent, tmux inside tmux); empty string without one.
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -12,10 +12,12 @@ export const spawnScript = join(
 );
 
 export function subagentSection() {
-  const transport = process.env.PASEO_AGENT_ID ? "paseo.md" : process.env.TMUX ? "tmux.md" : null;
-  if (!transport) return "";
-  const read = (name) => readFileSync(join(here, name), "utf8").trim();
-  return [read("common.md"), read(transport)]
-    .join("\n")
-    .replace(/<spawn-script>/g, () => JSON.stringify(spawnScript));
+  const method = process.env.PASEO_AGENT_ID ? "paseo" : process.env.TMUX ? "tmux" : null;
+  if (!method) return "";
+  return readFileSync(join(here, "prompt.md"), "utf8")
+    .replace(/<!--method:([a-z]+)-->\r?\n?([\s\S]*?)<!--\/method-->\r?\n?/g, (_m, name, body) =>
+      name === method ? body : "",
+    )
+    .replace(/<spawn-script>/g, () => JSON.stringify(spawnScript))
+    .trim();
 }

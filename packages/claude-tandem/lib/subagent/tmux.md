@@ -1,1 +1,0 @@
-- The script opens a tmux window named `<task-name>` running `claude`; when done, clean up the window

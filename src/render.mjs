@@ -18,7 +18,6 @@ function loadValues(harnessDir, harness) {
     worker_cmd_model: value("worker-cmd-model.txt"),
     install: value("install.md"),
     install_label: value("install-label.txt"),
-    // prompt edges land next to prompt/main.md in the package
     prefix: value("prefix.md"),
     suffix: value("suffix.md"),
   };
@@ -41,10 +40,7 @@ const listTree = (dir) =>
 
 const readmeTemplate = readFileSync(join(src, "README.md"), "utf8");
 const licenseText = readFileSync(join(repo, "LICENSE"), "utf8");
-// module dirs are rendered into every package at the same relative path;
-// every other directory under src/ is a harness
-// module dirs render into every package; skills/ lands at the package root
-// (harnesses discover it there by convention), the rest under lib/
+// skills/ lands at the package root (harnesses discover it there by convention), the other modules under lib/
 const moduleDirs = { "cli-tools": "lib/cli-tools", prompt: "lib/prompt", skills: "skills", subagent: "lib/subagent" };
 const moduleFiles = Object.entries(moduleDirs).flatMap(([dir, dest]) =>
   listTree(join(src, dir)).map((file) => [file, join(dest, relative(join(src, dir), file))]),
