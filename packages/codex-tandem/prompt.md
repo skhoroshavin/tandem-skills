@@ -38,6 +38,9 @@ Never write: "Great question!", "Let me know if...", "Let's dive in", "Here's wh
 
 A number of CLI tools are installed on this laptop and fully authenticated, you're encouraged to use them when the situation calls for it.
 
+<!--cli:rg-->
+- Use `rg` instead of `grep`
+<!--/cli-->
 <!--cli:gh-->
 - Use `gh` for anything GitHub: managing repos, issues, PRs, releases, workflows, API calls. For endpoints the CLI does not cover, use `gh api`
 - Don't hammer GitHub with repeated gh calls for reading code - instead check whether repo is already cloned locally to a sibling folder, if not clone it, and grep locally
