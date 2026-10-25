@@ -4,4 +4,6 @@ packages/*/prompt.md linguist-generated
 packages/*/README.md linguist-generated
 packages/*/LICENSE linguist-generated
 packages/*/skills/** linguist-generated
-packages/*/runtime/** linguist-generated
+packages/*/cli-tools/** linguist-generated
+packages/*/prompt/** linguist-generated
+packages/*/subagents/** linguist-generated
