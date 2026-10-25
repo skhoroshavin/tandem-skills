@@ -27,11 +27,11 @@ export function isOnPath(binary) {
 
 // Chromium-family binary for the headless-render fallback; PATH first, then app bundles
 function findBrowserBinary() {
-  for (const name of ["brave", "brave-browser", "chromium", "chromium-browser", "google-chrome", "google-chrome-stable"]) {
+  for (const name of ["chromium", "chromium-browser", "google-chrome", "google-chrome-stable"]) {
     if (isOnPath(name)) return name;
   }
   if (process.platform === "darwin") {
-    for (const app of ["Brave Browser", "Chromium", "Google Chrome", "Microsoft Edge"]) {
+    for (const app of ["Chromium", "Google Chrome"]) {
       const bin = `/Applications/${app}.app/Contents/MacOS/${app}`;
       try {
         if (statSync(bin).isFile()) return bin;
