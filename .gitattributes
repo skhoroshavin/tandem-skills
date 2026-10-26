@@ -1,6 +1,3 @@
 # Rendered from src/ by src/render.mjs - edit src/, then render
 /README.md linguist-generated
-packages/*/README.md linguist-generated
-packages/*/LICENSE linguist-generated
-packages/*/skills/** linguist-generated
-packages/*/lib/** linguist-generated
+packages/** linguist-generated

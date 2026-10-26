@@ -15,7 +15,7 @@
   "license": "MIT",
   "files": [
     "extensions/",
-    "lib/",
+    "system-prompt/",
     "skills/",
     "LICENSE",
     "README.md"

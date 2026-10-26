@@ -3,8 +3,8 @@
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { cliToolsSection } from "../cli-tools/index.mjs";
-import { subagentSection } from "../subagent/index.mjs";
+import { cliToolsSection } from "./cli-tools/index.mjs";
+import { subagentSection } from "./subagent/index.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 
@@ -15,7 +15,7 @@ export function assemblePrompt() {
   };
   return [
     part("prefix.md"),
-    part("body.md"),
+    part("prompt.md"),
     cliToolsSection(),
     subagentSection(),
     part("suffix.md"),

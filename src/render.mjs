@@ -1,27 +1,11 @@
 #!/usr/bin/env node
 // Renders src/ into packages/<harness>-tandem/ and the root README.md
 import { readFileSync, writeFileSync, readdirSync, statSync, existsSync, mkdirSync, chmodSync, rmSync } from "node:fs";
-import { join, dirname, relative } from "node:path";
+import { join, dirname, relative, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const repo = dirname(dirname(fileURLToPath(import.meta.url)));
 const src = join(repo, "src");
-
-function loadValues(harnessDir, harness) {
-  const value = (name) => {
-    const path = join(harnessDir, name);
-    return existsSync(path) ? readFileSync(path, "utf8").trimEnd() : "";
-  };
-  return {
-    harness,
-    worker_cmd: value("worker-cmd.txt"),
-    worker_cmd_model: value("worker-cmd-model.txt"),
-    install: value("install.md"),
-    install_label: value("install-label.txt"),
-    prefix: value("prefix.md"),
-    suffix: value("suffix.md"),
-  };
-}
 
 function render(text, values, where) {
   const out = text.replace(/{{([a-z_]+)}}/g, (match, key) => {
@@ -40,13 +24,15 @@ const listTree = (dir) =>
 
 const readmeTemplate = readFileSync(join(src, "README.md"), "utf8");
 const licenseText = readFileSync(join(repo, "LICENSE"), "utf8");
-// skills/ lands at the package root (harnesses discover it there by convention), the other modules under lib/
-const moduleDirs = { "cli-tools": "lib/cli-tools", prompt: "lib/prompt", skills: "skills", subagent: "lib/subagent" };
-const moduleFiles = Object.entries(moduleDirs).flatMap(([dir, dest]) =>
-  listTree(join(src, dir)).map((file) => [file, join(dest, relative(join(src, dir), file))]),
-);
-const execFiles = new Set(moduleFiles.map(([file]) => file).filter((f) => statSync(f).mode & 0o111));
-for (const [file] of moduleFiles) {
+
+// shared trees, injected into every package
+const systemPromptDir = join(src, "system-prompt");
+const skillsDir = join(src, "skills");
+const sharedFiles = [
+  ...listTree(systemPromptDir).map((file) => [file, join("system-prompt", relative(systemPromptDir, file))]),
+  ...listTree(skillsDir).map((file) => [file, join("skills", relative(skillsDir, file))]),
+];
+for (const [file] of sharedFiles) {
   if (!file.endsWith(".md")) continue;
   const text = readFileSync(file, "utf8");
   const openers = (text.match(/<!--cli:/g) || []).length;
@@ -56,56 +42,66 @@ for (const [file] of moduleFiles) {
   }
 }
 
-const installs = [];
+const harnessesDir = join(src, "harness");
 // sorted: this becomes the order of install sections in the root README
-const harnesses = readdirSync(src, { withFileTypes: true })
-  .filter((entry) => entry.isDirectory() && !(entry.name in moduleDirs))
+const harnesses = readdirSync(harnessesDir, { withFileTypes: true })
+  .filter((entry) => entry.isDirectory())
   .map((entry) => entry.name)
   .sort();
+
+const installs = [];
 for (const harness of harnesses) {
-  const values = loadValues(join(src, harness), harness);
+  const harnessDir = join(harnessesDir, harness);
+  const setting = (name) => {
+    const path = join(harnessDir, "settings", name);
+    return existsSync(path) ? readFileSync(path, "utf8").trimEnd() : "";
+  };
+  const values = {
+    harness,
+    install: setting("install.md"),
+    install_label: setting("install-label.txt"),
+    worker_cmd: setting("worker-cmd.txt"),
+    worker_cmd_model: setting("worker-cmd-model.txt"),
+  };
   if (values.install) {
-    installs.push(
-      values.install_label
-        ? `${values.install_label}:\n\n${values.install}`
-        : values.install,
-    );
+    installs.push(values.install_label ? `${values.install_label}:\n\n${values.install}` : values.install);
   }
+
   const target = join(repo, "packages", `${harness}-tandem`);
-
-  const outputs = new Map([
-    [join(target, "LICENSE"), [licenseText, false]],
-    ...(values.install
-      ? [[join(target, "README.md"), [render(readmeTemplate, values, `${harness}: README.md`), false]]]
-      : []),
-    ...moduleFiles.map(([file, rel]) => [
-      join(target, rel),
-      [render(readFileSync(file, "utf8"), values, `${harness}: ${relative(src, file)}`), execFiles.has(file)],
-    ]),
-    ...(values.prefix ? [[join(target, "lib", "prompt", "prefix.md"), [values.prefix, false]]] : []),
-    ...(values.suffix ? [[join(target, "lib", "prompt", "suffix.md"), [values.suffix, false]]] : []),
-  ]);
-
-  const stale = ["lib", "skills"]
-    .flatMap((dir) => (existsSync(join(target, dir)) ? listTree(join(target, dir)) : []))
-    .filter((path) => !outputs.has(path));
-  if (!values.install && existsSync(join(target, "README.md"))) {
-    stale.push(join(target, "README.md"));
+  // wipe the package, sparing npm artifacts; stale files die here
+  if (existsSync(target)) {
+    for (const entry of readdirSync(target)) {
+      if (entry !== "node_modules" && entry !== "package-lock.json") {
+        rmSync(join(target, entry), { recursive: true, force: true });
+      }
+    }
   }
 
-  for (const [dest, [content, exec]] of outputs) {
+  // harness tree (settings/ is consumed as values above, never copied), shared trees, README, LICENSE
+  const writeFile = (destRel, content, exec) => {
+    const dest = join(target, destRel);
     mkdirSync(dirname(dest), { recursive: true });
     writeFileSync(dest, content);
     chmodSync(dest, exec ? 0o755 : 0o644);
+  };
+  const copy = (srcFile, destRel) =>
+    writeFile(
+      destRel,
+      render(readFileSync(srcFile, "utf8"), values, `${harness}: ${relative(src, srcFile)}`),
+      statSync(srcFile).mode & 0o111,
+    );
+  for (const file of listTree(harnessDir)) {
+    if (relative(harnessDir, file).split(sep)[0] !== "settings") {
+      copy(file, relative(harnessDir, file));
+    }
   }
-  for (const path of stale) {
-    console.error(`${harness}: removing stale ${relative(repo, path)}`);
-    rmSync(path);
-  }
-  console.log(`${harness}: rendered ${outputs.size} files`);
+  for (const [file, rel] of sharedFiles) copy(file, rel);
+  if (values.install) writeFile("README.md", render(readmeTemplate, values, `${harness}: README.md`));
+  writeFile("LICENSE", licenseText);
+
+  console.log(`${harness}: rendered`);
 }
 
 const rootReadme = render(readmeTemplate, { install: installs.join("\n\n") }, "root: README.md");
-const rootPath = join(repo, "README.md");
-writeFileSync(rootPath, rootReadme);
+writeFileSync(join(repo, "README.md"), rootReadme);
 console.log("root: rendered README.md");

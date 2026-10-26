@@ -1,6 +1,6 @@
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { assemblePrompt } from "./lib/prompt/index.mjs";
+import { assemblePrompt } from "./system-prompt/index.mjs";
 
 const root = dirname(fileURLToPath(import.meta.url));
 const prompt = assemblePrompt();

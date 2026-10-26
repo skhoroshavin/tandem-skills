@@ -15,6 +15,4 @@ And CI must pass, of course.
 
 ## Dev loop
 
-Edit content in `src/` - the prompt, the skills, the runtime scripts. Then run `./preflight.sh`: it renders the changes into `packages/` and typechecks. Commit both sides together; CI rejects the PR if `packages/` is out of sync with `src/`.
-
-Two consequences: never hand-edit rendered files (they get overwritten or rejected anyway), and the harness-specific plumbing that exists only under `packages/` - manifests, hooks, extensions, packaging - is edited directly where it lives. Layout details: AGENTS.md.
+Edit content in `src/` - the prompt, the skills, the harness plumbing; everything under `packages/` is rendered from it. Then run `./preflight.sh`: it renders the changes into `packages/` and typechecks. Commit both sides together; CI rejects the PR if `packages/` is out of sync with `src/`. Never hand-edit rendered files - the next render overwrites them anyway. Layout details: AGENTS.md.

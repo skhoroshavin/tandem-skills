@@ -11,7 +11,7 @@
   "license": "MIT",
   "files": [
     "plugin.js",
-    "lib/",
+    "system-prompt/",
     "skills/"
   ],
   "exports": {
