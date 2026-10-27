@@ -52,7 +52,7 @@ const harnesses = readdirSync(harnessesDir, { withFileTypes: true })
 const installs = [];
 for (const harness of harnesses) {
   const harnessDir = join(harnessesDir, harness);
-  // settings.json and install.md are consumed as values here, never copied
+  // the harness dir holds only values consumed here, nothing is copied from it
   const values = {
     harness,
     ...JSON.parse(readFileSync(join(harnessDir, "settings.json"), "utf8")),
@@ -65,16 +65,10 @@ for (const harness of harnesses) {
   }
 
   const target = join(repo, "packages", `${harness}-tandem`);
-  // wipe the package, sparing npm artifacts; stale files die here
-  if (existsSync(target)) {
-    for (const entry of readdirSync(target)) {
-      if (entry !== "node_modules" && entry !== "package-lock.json") {
-        rmSync(join(target, entry), { recursive: true, force: true });
-      }
-    }
-  }
+  // system-prompt/ and skills/ are render-owned; everything else in the package is hand-maintained
+  rmSync(join(target, "system-prompt"), { recursive: true, force: true });
+  rmSync(join(target, "skills"), { recursive: true, force: true });
 
-  // harness tree (settings/ is consumed as values above, never copied), shared trees, README, LICENSE
   const writeFile = (destRel, content, exec) => {
     const dest = join(target, destRel);
     mkdirSync(dirname(dest), { recursive: true });
@@ -87,14 +81,13 @@ for (const harness of harnesses) {
       render(readFileSync(srcFile, "utf8"), values, `${harness}: ${relative(src, srcFile)}`),
       statSync(srcFile).mode & 0o111,
     );
-  for (const file of listTree(harnessDir)) {
-    const rel = relative(harnessDir, file);
-    if (rel !== "settings.json" && rel !== "install.md") {
-      copy(file, rel);
-    }
-  }
   for (const [file, rel] of sharedFiles) copy(file, rel);
+  for (const edge of ["prefix.md", "suffix.md"]) {
+    const file = join(harnessDir, edge);
+    if (existsSync(file)) copy(file, join("system-prompt", edge));
+  }
   if (values.install) writeFile("README.md", render(readmeTemplate, values, `${harness}: README.md`));
+  else rmSync(join(target, "README.md"), { force: true });
   writeFile("LICENSE", licenseText);
 
   console.log(`${harness}: rendered`);

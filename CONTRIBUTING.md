@@ -15,4 +15,4 @@ And CI must pass, of course.
 
 ## Dev loop
 
-Edit content in `src/` - the prompt, the skills, the harness plumbing; everything under `packages/` is rendered from it. Then run `./preflight.sh`: it renders the changes into `packages/` and typechecks. Commit both sides together; CI rejects the PR if `packages/` is out of sync with `src/`. Never hand-edit rendered files - the next render overwrites them anyway. Layout details: AGENTS.md.
+Edit content in `src/` - the prompt, the skills, the harness values - and harness plumbing directly in `packages/<harness>-tandem/`, where it lives. Then run `./preflight.sh`: it renders `src/` into `packages/` and typechecks. Commit both sides together; CI rejects the PR if `packages/` is out of sync with `src/`. Never hand-edit rendered files (`skills/`, `system-prompt/`, `README.md`, `LICENSE` in the packages, and the root `README.md`) - the next render overwrites them anyway. Layout details: AGENTS.md.
