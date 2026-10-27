@@ -1,0 +1,5 @@
+{
+  "label": "OpenCode",
+  "worker_cmd": "opencode --agent tandem --prompt '$prompt'",
+  "worker_cmd_model": "opencode --agent tandem --model $model --prompt '$prompt'"
+}

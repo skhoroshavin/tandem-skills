@@ -1,0 +1,5 @@
+{
+  "label": "Claude Code",
+  "worker_cmd": "claude '$prompt'",
+  "worker_cmd_model": "claude --model $model '$prompt'"
+}

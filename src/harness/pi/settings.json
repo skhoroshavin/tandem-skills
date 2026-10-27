@@ -1,0 +1,5 @@
+{
+  "label": "Pi Coding Agent",
+  "worker_cmd": "pi --no-session '$prompt'",
+  "worker_cmd_model": "pi --no-session --model $model '$prompt'"
+}
