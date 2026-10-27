@@ -3,6 +3,7 @@
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { filterBlocks } from "../filter.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 
@@ -14,10 +15,7 @@ const spawnScript = join(
 export function subagentSection() {
   const method = process.env.PASEO_AGENT_ID ? "paseo" : process.env.TMUX ? "tmux" : null;
   if (!method) return "";
-  return readFileSync(join(here, "prompt.md"), "utf8")
-    .replace(/<!--method:([a-z]+)-->\r?\n?([\s\S]*?)<!--\/method-->\r?\n?/g, (_m, name, body) =>
-      name === method ? body : "",
-    )
+  return filterBlocks(readFileSync(join(here, "prompt.md"), "utf8"), (name) => name === method)
     .replace(/<spawn-script>/g, () => JSON.stringify(spawnScript))
     .trim();
 }

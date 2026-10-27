@@ -3,6 +3,7 @@
 import { readFileSync, writeFileSync, readdirSync, statSync, existsSync, mkdirSync, chmodSync, rmSync } from "node:fs";
 import { join, dirname, relative } from "node:path";
 import { fileURLToPath } from "node:url";
+import { assertMarkersClosed } from "./system-prompt/filter.mjs";
 
 const repo = dirname(dirname(fileURLToPath(import.meta.url)));
 const src = join(repo, "src");
@@ -32,16 +33,6 @@ const sharedFiles = [
   ...listTree(systemPromptDir).map((file) => [file, join("system-prompt", relative(systemPromptDir, file))]),
   ...listTree(skillsDir).map((file) => [file, join("skills", relative(skillsDir, file))]),
 ];
-for (const [file] of sharedFiles) {
-  if (!file.endsWith(".md")) continue;
-  const text = readFileSync(file, "utf8");
-  const openers = (text.match(/<!--cli:/g) || []).length;
-  const closers = (text.match(/<!--\/cli-->/g) || []).length;
-  if (openers !== closers) {
-    throw new Error(`${relative(src, file)}: unbalanced cli markers: ${openers} openers, ${closers} closers`);
-  }
-}
-
 const harnessesDir = join(src, "harness");
 // sorted: this becomes the order of install sections in the root README
 const harnesses = readdirSync(harnessesDir, { withFileTypes: true })
@@ -75,12 +66,15 @@ for (const harness of harnesses) {
     writeFileSync(dest, content);
     chmodSync(dest, exec ? 0o755 : 0o644);
   };
-  const copy = (srcFile, destRel) =>
+  const copy = (srcFile, destRel) => {
+    const text = readFileSync(srcFile, "utf8");
+    if (destRel.endsWith(".md")) assertMarkersClosed(text, relative(src, srcFile));
     writeFile(
       destRel,
-      render(readFileSync(srcFile, "utf8"), values, `${harness}: ${relative(src, srcFile)}`),
+      render(text, values, `${harness}: ${relative(src, srcFile)}`),
       statSync(srcFile).mode & 0o111,
     );
+  };
   for (const [file, rel] of sharedFiles) copy(file, rel);
   for (const edge of ["prefix.md", "suffix.md"]) {
     const file = join(harnessDir, edge);

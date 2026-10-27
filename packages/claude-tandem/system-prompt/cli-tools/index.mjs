@@ -4,6 +4,7 @@ import { spawnSync } from "node:child_process";
 import { readFileSync, statSync } from "node:fs";
 import { delimiter, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { filterBlocks } from "../filter.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 
@@ -58,14 +59,11 @@ function toolAvailable(tool, ctx) {
 export function cliToolsSection() {
   const ctx = { browser: findBrowserBinary(), html2text: isPythonHtml2text() };
   let hasTools = false;
-  const prompt = readFileSync(join(here, "prompt.md"), "utf8").replace(
-    /<!--cli:([a-z0-9]+)-->\r?\n?([\s\S]*?)<!--\/cli-->\r?\n?/g,
-    (_marker, tool, body) => {
-      if (!toolAvailable(tool, ctx)) return "";
-      hasTools = true;
-      return body;
-    },
-  );
+  const prompt = filterBlocks(readFileSync(join(here, "prompt.md"), "utf8"), (tool) => {
+    const available = toolAvailable(tool, ctx);
+    hasTools ||= available;
+    return available;
+  });
   if (!hasTools) return "";
   return prompt
     .replace(/<browser-binary>/g, () => JSON.stringify(ctx.browser))
