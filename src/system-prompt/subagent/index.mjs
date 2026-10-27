@@ -6,7 +6,7 @@ import { fileURLToPath } from "node:url";
 
 const here = dirname(fileURLToPath(import.meta.url));
 
-export const spawnScript = join(
+const spawnScript = join(
   here,
   process.env.PASEO_AGENT_ID ? "spawn-paseo.sh" : "spawn-tmux.sh",
 );

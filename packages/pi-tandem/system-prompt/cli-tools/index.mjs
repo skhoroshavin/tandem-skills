@@ -10,7 +10,7 @@ const here = dirname(fileURLToPath(import.meta.url));
 // windows executables are found via fixed suffixes (.exe etc)
 const extensions = process.platform === "win32" ? [".EXE", ".BAT", ".CMD"] : [""];
 
-export function isOnPath(binary) {
+function isOnPath(binary) {
   for (const dir of (process.env.PATH ?? "").split(delimiter)) {
     for (const ext of extensions) {
       try {
@@ -68,7 +68,7 @@ export function cliToolsSection() {
   );
   if (!hasTools) return "";
   return prompt
-    .replace(/<browser-binary>/g, () => (ctx.browser ? JSON.stringify(ctx.browser) : "<browser-binary>"))
+    .replace(/<browser-binary>/g, () => JSON.stringify(ctx.browser))
     .replace(/\n{3,}/g, "\n\n")
     .trim();
 }
