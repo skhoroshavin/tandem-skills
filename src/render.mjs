@@ -1,35 +1,12 @@
 #!/usr/bin/env node
-// Renders src/ templates into packages/<harness>-tandem/ and the root README.md
+// Renders src/ into packages/<harness>-tandem/ and the root README.md
 import { readFileSync, writeFileSync, readdirSync, statSync, existsSync, mkdirSync, chmodSync, rmSync } from "node:fs";
 import { join, dirname, relative } from "node:path";
 import { fileURLToPath } from "node:url";
+import { assertMarkersClosed } from "./system-prompt/filter.mjs";
 
 const repo = dirname(dirname(fileURLToPath(import.meta.url)));
 const src = join(repo, "src");
-
-function loadValues(harnessDir, harness) {
-  const value = (name) => {
-    const path = join(harnessDir, name);
-    return existsSync(path) ? readFileSync(path, "utf8").trimEnd() : "";
-  };
-  return {
-    harness,
-    prompt_prefix: value("prompt-prefix.md"),
-    prompt_suffix: value("prompt-suffix.md"),
-    worker_cmd: value("worker-cmd.txt"),
-    worker_cmd_model: value("worker-cmd-model.txt"),
-    install: value("install.md"),
-    install_label: value("install-label.txt"),
-  };
-}
-
-function assertBalancedCliMarkers(text, where) {
-  const openers = (text.match(/<!--cli:/g) || []).length;
-  const closers = (text.match(/<!--\/cli-->/g) || []).length;
-  if (openers !== closers) {
-    throw new Error(`${where}: unbalanced cli markers: ${openers} openers, ${closers} closers`);
-  }
-}
 
 function render(text, values, where) {
   const out = text.replace(/{{([a-z_]+)}}/g, (match, key) => {
@@ -46,67 +23,70 @@ const listTree = (dir) =>
     .filter((e) => e.isFile())
     .map((e) => join(e.parentPath, e.name));
 
-const promptTemplate = readFileSync(join(src, "prompt.md"), "utf8");
-assertBalancedCliMarkers(promptTemplate, "src/prompt.md");
 const readmeTemplate = readFileSync(join(src, "README.md"), "utf8");
 const licenseText = readFileSync(join(repo, "LICENSE"), "utf8");
-const skillFiles = listTree(join(src, "skills"));
-const runtimeFiles = listTree(join(src, "runtime"));
-const execFiles = new Set([...skillFiles, ...runtimeFiles].filter((f) => statSync(f).mode & 0o111));
 
-const installs = [];
-// src/ dirs except skills/ (the template) and runtime/ (shared helpers) are harnesses; sorted: order leaks into the root README
-const harnesses = readdirSync(src, { withFileTypes: true })
-  .filter((entry) => entry.isDirectory() && entry.name !== "skills" && entry.name !== "runtime")
+// shared trees, injected into every package
+const systemPromptDir = join(src, "system-prompt");
+const skillsDir = join(src, "skills");
+const sharedFiles = [
+  ...listTree(systemPromptDir).map((file) => [file, join("system-prompt", relative(systemPromptDir, file))]),
+  ...listTree(skillsDir).map((file) => [file, join("skills", relative(skillsDir, file))]),
+];
+const harnessesDir = join(src, "harness");
+// sorted: this becomes the order of install sections in the root README
+const harnesses = readdirSync(harnessesDir, { withFileTypes: true })
+  .filter((entry) => entry.isDirectory())
   .map((entry) => entry.name)
   .sort();
+
+const installs = [];
 for (const harness of harnesses) {
-  const values = loadValues(join(src, harness), harness);
+  const harnessDir = join(harnessesDir, harness);
+  // the harness dir holds only values consumed here, nothing is copied from it
+  const values = {
+    harness,
+    ...JSON.parse(readFileSync(join(harnessDir, "settings.json"), "utf8")),
+    install: existsSync(join(harnessDir, "install.md"))
+      ? readFileSync(join(harnessDir, "install.md"), "utf8").trimEnd()
+      : "",
+  };
   if (values.install) {
-    installs.push(
-      values.install_label
-        ? `${values.install_label}:\n\n${values.install}`
-        : values.install,
-    );
+    installs.push(values.label ? `${values.label}:\n\n${values.install}` : values.install);
   }
+
   const target = join(repo, "packages", `${harness}-tandem`);
+  // system-prompt/ and skills/ are render-owned; everything else in the package is hand-maintained
+  rmSync(join(target, "system-prompt"), { recursive: true, force: true });
+  rmSync(join(target, "skills"), { recursive: true, force: true });
 
-  const outputs = new Map([
-    [join(target, "prompt.md"), [render(promptTemplate, values, `${harness}: prompt.md`).trimStart(), false]],
-    [join(target, "LICENSE"), [licenseText, false]],
-    ...(values.install
-      ? [[join(target, "README.md"), [render(readmeTemplate, values, `${harness}: README.md`), false]]]
-      : []),
-    ...skillFiles.map((file) => [
-      join(target, relative(src, file)),
-      [render(readFileSync(file, "utf8"), values, `${harness}: ${relative(src, file)}`), execFiles.has(file)],
-    ]),
-    ...runtimeFiles.map((file) => [
-      join(target, relative(src, file)),
-      [render(readFileSync(file, "utf8"), values, `${harness}: ${relative(src, file)}`), execFiles.has(file)],
-    ]),
-  ]);
-
-  const stale = ["skills", "runtime"]
-    .flatMap((dir) => (existsSync(join(target, dir)) ? listTree(join(target, dir)) : []))
-    .filter((path) => !outputs.has(path));
-  if (!values.install && existsSync(join(target, "README.md"))) {
-    stale.push(join(target, "README.md"));
-  }
-
-  for (const [dest, [content, exec]] of outputs) {
+  const writeFile = (destRel, content, exec) => {
+    const dest = join(target, destRel);
     mkdirSync(dirname(dest), { recursive: true });
     writeFileSync(dest, content);
     chmodSync(dest, exec ? 0o755 : 0o644);
+  };
+  const copy = (srcFile, destRel) => {
+    const text = readFileSync(srcFile, "utf8");
+    if (destRel.endsWith(".md")) assertMarkersClosed(text, relative(src, srcFile));
+    writeFile(
+      destRel,
+      render(text, values, `${harness}: ${relative(src, srcFile)}`),
+      statSync(srcFile).mode & 0o111,
+    );
+  };
+  for (const [file, rel] of sharedFiles) copy(file, rel);
+  for (const edge of ["prefix.md", "suffix.md"]) {
+    const file = join(harnessDir, edge);
+    if (existsSync(file)) copy(file, join("system-prompt", edge));
   }
-  for (const path of stale) {
-    console.error(`${harness}: removing stale ${relative(repo, path)}`);
-    rmSync(path);
-  }
-  console.log(`${harness}: rendered ${outputs.size} files`);
+  if (values.install) writeFile("README.md", render(readmeTemplate, values, `${harness}: README.md`));
+  else rmSync(join(target, "README.md"), { force: true });
+  writeFile("LICENSE", licenseText);
+
+  console.log(`${harness}: rendered`);
 }
 
 const rootReadme = render(readmeTemplate, { install: installs.join("\n\n") }, "root: README.md");
-const rootPath = join(repo, "README.md");
-writeFileSync(rootPath, rootReadme);
+writeFileSync(join(repo, "README.md"), rootReadme);
 console.log("root: rendered README.md");

@@ -1,10 +1,9 @@
-import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { filterCliTools } from "./runtime/cli-tools.mjs";
+import { assemblePrompt } from "./system-prompt/index.mjs";
 
 const root = dirname(fileURLToPath(import.meta.url));
-const prompt = filterCliTools(readFileSync(join(root, "prompt.md"), "utf8"));
+const prompt = assemblePrompt();
 
 export const Tandem = async () => ({
   config: (config) => {
