@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Renders src/ into packages/<harness>-tandem/ and the root README.md
 import { readFileSync, writeFileSync, readdirSync, statSync, existsSync, mkdirSync, chmodSync, rmSync } from "node:fs";
-import { join, dirname, relative, sep } from "node:path";
+import { join, dirname, relative } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const repo = dirname(dirname(fileURLToPath(import.meta.url)));
@@ -52,19 +52,16 @@ const harnesses = readdirSync(harnessesDir, { withFileTypes: true })
 const installs = [];
 for (const harness of harnesses) {
   const harnessDir = join(harnessesDir, harness);
-  const setting = (name) => {
-    const path = join(harnessDir, "settings", name);
-    return existsSync(path) ? readFileSync(path, "utf8").trimEnd() : "";
-  };
+  // settings.json and install.md are consumed as values here, never copied
   const values = {
     harness,
-    install: setting("install.md"),
-    install_label: setting("install-label.txt"),
-    worker_cmd: setting("worker-cmd.txt"),
-    worker_cmd_model: setting("worker-cmd-model.txt"),
+    ...JSON.parse(readFileSync(join(harnessDir, "settings.json"), "utf8")),
+    install: existsSync(join(harnessDir, "install.md"))
+      ? readFileSync(join(harnessDir, "install.md"), "utf8").trimEnd()
+      : "",
   };
   if (values.install) {
-    installs.push(values.install_label ? `${values.install_label}:\n\n${values.install}` : values.install);
+    installs.push(values.label ? `${values.label}:\n\n${values.install}` : values.install);
   }
 
   const target = join(repo, "packages", `${harness}-tandem`);
@@ -91,8 +88,9 @@ for (const harness of harnesses) {
       statSync(srcFile).mode & 0o111,
     );
   for (const file of listTree(harnessDir)) {
-    if (relative(harnessDir, file).split(sep)[0] !== "settings") {
-      copy(file, relative(harnessDir, file));
+    const rel = relative(harnessDir, file);
+    if (rel !== "settings.json" && rel !== "install.md") {
+      copy(file, rel);
     }
   }
   for (const [file, rel] of sharedFiles) copy(file, rel);

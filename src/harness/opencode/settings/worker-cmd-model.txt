@@ -1,1 +1,0 @@
-opencode --agent tandem --model $model --prompt '$prompt'

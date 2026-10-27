@@ -1,0 +1,5 @@
+{
+  "label": "Codex CLI",
+  "worker_cmd": "codex '$prompt'",
+  "worker_cmd_model": "codex -m $model '$prompt'"
+}
