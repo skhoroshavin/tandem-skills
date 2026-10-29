@@ -20,6 +20,13 @@ codex plugin add tandem@tandem-skills
 
 On first session start Codex flags the bundled hook for review - trust it via `/hooks`.
 
+Gemini CLI:
+
+```bash
+git clone https://github.com/skhoroshavin/tandem-skills ../tandem-skills
+gemini extensions link ../tandem-skills/packages/gemini-tandem
+```
+
 OpenCode:
 
 ```bash
