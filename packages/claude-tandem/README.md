@@ -46,6 +46,7 @@ The idea first shipped in [pi-supergsd](https://github.com/skhoroshavin/pi-super
 The plugin notices which CLI tools are actually installed on your machine, and for each one it finds, adds a short note telling the model that the tool is available and recommended to use. Installing these gets you significantly more out of this package:
 
 - `gh` - GitHub CLI: repos, issues, PRs, releases, workflows
+- `glab` - GitLab CLI: repos, issues, MRs, releases, pipelines
 - `html2text` (Python, e.g. via `pipx install html2text`) - read web pages as markdown instead of raw markup
 - `lynx` - plain-text fallback for web pages when the Python `html2text` is not installed
 - `pdftotext` (poppler) - extract text from PDFs
