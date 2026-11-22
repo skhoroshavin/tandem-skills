@@ -10,6 +10,9 @@ A number of CLI tools are installed on this laptop and fully authenticated, you'
 - Don't hammer GitHub with repeated gh calls for reading code - instead check whether repo is already cloned locally to a sibling folder, if not clone it, and grep locally
 - Show the exact commit message before creating it, so user can correct you
 <!--/cli-->
+<!--cli:glab-->
+- Use `glab` for anything GitLab: managing repos, issues, MRs, releases, pipelines and CI variables. For endpoints the CLI does not cover, use `glab api`
+<!--/cli-->
 <!--cli:jira-->
 - Use `jira` for anything Jira related, including searching for and reading tickets and comments, as well as creating and updating tickets and comments under them
 <!--/cli-->
